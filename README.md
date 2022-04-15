@@ -1,10 +1,15 @@
-# Specialisation in Artificial Intelligence
+# Machine learning
 
-The repository contains a collection of assignments in two subjects related to artificial intelligence. 
+A collection of solutions to tasks set by the course tutor.
 
-1. [MLR](./mlr/README.md) - Machine learning
-2. MHE - Metaheuristics
+## Build
 
-## License 
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+The python used is 3.9.
 
+It is a good idea to start by installing all the packages you use:
+
+* pip3 install -r requirements.txt
+
+## Task instructions
+
+Instructions will not be made publicly available due to the intellectual property of the lecturer. 
