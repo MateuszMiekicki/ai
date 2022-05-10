@@ -30,23 +30,6 @@ TEST(setCellTest, checkingIfWeCanInsertAnythingIntoABoardOfSizeZero)
     ASSERT_FALSE(SET_CELL_RESULT);
 }
 
-// TEST(setCellTest, setACellWhenThereIsACellWithZeroNextToIt)
-//{
-//     // Arrange
-//     using namespace shakashaka;
-//     const auto EMPTY_CELL = Board::Cell();
-//     const auto ZERO_CELL = Board::Cell(0);
-//     auto boardWithACellWithTheNumberZero =
-//         Board::board_t{{EMPTY_CELL, EMPTY_CELL, ZERO_CELL},
-//                        {EMPTY_CELL, EMPTY_CELL, EMPTY_CELL},
-//                        {EMPTY_CELL, EMPTY_CELL, EMPTY_CELL}};
-//     // Act
-//     auto board = Board(boardWithACellWithTheNumberZero);
-//     const auto SET_CELL_RESULT = board.setCell();
-//     // Assert
-//     ASSERT_FALSE(SET_CELL_RESULT)
-// }
-
 struct BoardAndResultSetCell
 {
     shakashaka::Board::board_t board;
