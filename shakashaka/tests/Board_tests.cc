@@ -43,7 +43,7 @@ class Board_Parametrized
 {
 };
 
-TEST_P(Board_Parametrized, test_clearing_whitespaces)
+TEST_P(Board_Parametrized, testOfInsertingNewCellsIntoTheBoard)
 {
     // Arrange
     using namespace shakashaka;
@@ -272,4 +272,31 @@ INSTANTIATE_TEST_CASE_P(
             shakashaka::Board::Cell(
                 shakashaka::Board::Cell::Type::bottomLeftCornerHalfShaded),
             shakashaka::Board::Coordinate{1, 2},
+            false},
+        //--
+        BoardAndResultSetCell{
+            {{shakashaka::Board::Cell::Type::empty,
+              shakashaka::Board::Cell::Type::empty,
+              shakashaka::Board::Cell::Type::empty},
+             {shakashaka::Board::Cell::Type::bottomRightCornerHalfShaded, 2,
+              shakashaka::Board::Cell::Type::empty},
+             {shakashaka::Board::Cell::Type::empty,
+              shakashaka::Board::Cell::Type::empty,
+              shakashaka::Board::Cell::Type::empty}},
+            shakashaka::Board::Cell(
+                shakashaka::Board::Cell::Type::bottomLeftCornerHalfShaded),
+            shakashaka::Board::Coordinate{1, 2},
+            true},
+        BoardAndResultSetCell{
+            {{shakashaka::Board::Cell::Type::empty,
+              shakashaka::Board::Cell::Type::empty,
+              shakashaka::Board::Cell::Type::empty},
+             {shakashaka::Board::Cell::Type::bottomRightCornerHalfShaded, 2,
+              shakashaka::Board::Cell::Type::bottomLeftCornerHalfShaded},
+             {shakashaka::Board::Cell::Type::empty,
+              shakashaka::Board::Cell::Type::empty,
+              shakashaka::Board::Cell::Type::empty}},
+            shakashaka::Board::Cell(
+                shakashaka::Board::Cell::Type::bottomLeftCornerHalfShaded),
+            shakashaka::Board::Coordinate{0, 1},
             false}));

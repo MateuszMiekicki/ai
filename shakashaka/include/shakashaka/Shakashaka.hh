@@ -12,6 +12,13 @@ class Board
 {
   private:
     std::shared_ptr<spdlog::logger> logger_ = nullptr;
+    enum class Position
+    {
+        up = 0,
+        down,
+        left,
+        right
+    };
 
   public:
     struct Coordinate
@@ -31,11 +38,16 @@ class Board
             upperRightCornerHalfShaded,
             bottomRightCornerHalfShaded
         };
+        std::string toString() const;
         Type type{Type::empty};
         std::optional<unsigned> number{std::nullopt};
         Cell() = default;
         Cell(const Type t);
         Cell(const unsigned n);
+
+        bool isAdjacentCell(const Position p) const;
+        bool isNumberCell() const;
+        bool isZeroCell() const;
     };
     using row_t = std::vector<Cell>;
     using board_t = std::vector<row_t>;
@@ -43,21 +55,18 @@ class Board
   private:
     board_t board_ = {};
 
-    bool isInRangeOfBoard(const Coordinate coordinate) const;
-    bool isSettable(const Cell cell, const Coordinate coordinate) const;
-
-    enum class Position
-    {
-        up = 0,
-        down,
-        left,
-        right
-    };
     using coordinateNeighborhoodCell_t =
         std::unordered_map<Position, Coordinate>;
-    coordinateNeighborhoodCell_t coordinateNeighborhoodCell_ = {};
+
+    bool isInRangeOfBoard(const Coordinate coordinate) const;
+    bool isSettable(const Cell &cell, const Coordinate coordinate) const;
+
     coordinateNeighborhoodCell_t getNeighbours(
         const Coordinate coordinate) const;
+    std::size_t numberOfAdjacentNeighbours(const Coordinate coordinate) const;
+
+    coordinateNeighborhoodCell_t coordinateNeighborhoodCell_ = {};
+    bool isAdjacentCell(Cell f, Cell s)const;
 
   public:
     Board(const std::size_t size);
