@@ -8,10 +8,49 @@
 
 namespace shakashaka
 {
-class Board
+struct Coordinate
 {
+    using row_t = std::size_t;
+    using col_t = std::size_t;
+    row_t row;
+    col_t col;
+};
+
+struct Neighbour;
+class Cell
+{
+  public:
+    enum class Type
+    {
+        empty = 0,
+        number,
+        dot,
+        upperLeftCornerHalfShaded,
+        bottomLeftCornerHalfShaded,
+        upperRightCornerHalfShaded,
+        bottomRightCornerHalfShaded
+    };
+
   private:
-    std::shared_ptr<spdlog::logger> logger_ = nullptr;
+    Type type_ = Type::empty;
+    std::optional<std::size_t> number_{std::nullopt};
+
+  public:
+    Cell(const Type type);
+    Cell(const std::size_t number);
+    Type getType() const;
+    bool isNumber() const;
+    bool isZeroNumber() const;
+    bool isAdjacent(const Neighbour &neighbour) const;
+    bool isDot() const;
+    bool isBottomType() const;
+    bool isUpperType() const;
+    bool isLeftType() const;
+    bool isRightType() const;
+};
+
+struct Neighbour
+{
     enum class Position
     {
         up = 0,
@@ -19,60 +58,31 @@ class Board
         left,
         right
     };
-
+    Neighbour() = delete;
+    Position position;
+    Coordinate coordinate;
+    Cell cell;
+};
+class Board
+{
   public:
-    struct Coordinate
-    {
-        std::size_t row;
-        std::size_t col;
-    };
-    struct Cell
-    {
-        enum class Type
-        {
-            empty = 0,
-            number,
-            dot,
-            upperLeftCornerHalfShaded,
-            bottomLeftCornerHalfShaded,
-            upperRightCornerHalfShaded,
-            bottomRightCornerHalfShaded
-        };
-        std::string toString() const;
-        Type type{Type::empty};
-        std::optional<unsigned> number{std::nullopt};
-        Cell() = default;
-        Cell(const Type t);
-        Cell(const unsigned n);
-
-        bool isAdjacentCell(const Position p) const;
-        bool isNumberCell() const;
-        bool isZeroCell() const;
-    };
     using row_t = std::vector<Cell>;
     using board_t = std::vector<row_t>;
+    using neighbours_t = std::vector<Neighbour>;
+
+    Board(const std::size_t size);
+    Board(const board_t &board);
 
   private:
     board_t board_ = {};
 
-    using coordinateNeighborhoodCell_t =
-        std::unordered_map<Position, Coordinate>;
-
     bool isInRangeOfBoard(const Coordinate coordinate) const;
-    bool isSettable(const Cell &cell, const Coordinate coordinate) const;
-
-    coordinateNeighborhoodCell_t getNeighbours(
-        const Coordinate coordinate) const;
-    std::size_t numberOfAdjacentNeighbours(const Coordinate coordinate) const;
-
-    coordinateNeighborhoodCell_t coordinateNeighborhoodCell_ = {};
-    bool isAdjacentCell(Cell f, Cell s)const;
+    bool isSettable(const Cell &cell, const Coordinate &coordinate) const;
+    neighbours_t getNeighbours(const Coordinate &coordinate) const;
 
   public:
-    Board(const std::size_t size);
-    Board(const board_t &board);
-    bool setCell(const Cell cell, const Coordinate coordinate);
-    Cell getCell(const Coordinate coordinate) const;
+    Cell getCell(const Coordinate &coordinate) const;
+    bool setCell(const Cell &cell, const Coordinate &coordinate);
 };
 } // namespace shakashaka
 #endif // AI_SHAKASHAKA_HH
