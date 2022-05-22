@@ -54,6 +54,10 @@ bool shakashaka::Cell::isRightType() const
     return type_ == Type::bottomRightCornerHalfShaded or
            type_ == Type::upperRightCornerHalfShaded;
 }
+std::size_t shakashaka::Cell::getNumber() const
+{
+    return number_.value_or(-1);
+}
 
 shakashaka::Board::Board(const std::size_t size)
     : Board({size, row_t(size, Cell::Type::empty)})
@@ -84,36 +88,55 @@ bool shakashaka::Board::isSettable(const Cell &cell,
     }
     for (const auto &neighbour : getNeighbours(coordinate))
     {
-        if (cell.isAdjacent(neighbour) and neighbour.cell.isZeroNumber())
+        if (const auto isAdjacent = cell.isAdjacent(neighbour);
+            isAdjacent and neighbour.cell.isZeroNumber())
         {
             return false;
+        }
+        else if (isAdjacent and neighbour.cell.isNumber())
+        {
+            const auto neighboursNeighbour =
+                getNeighbours(neighbour.coordinate);
+            auto res =
+                neighbour.cell.countAdjacentNeighbours(neighboursNeighbour);
+            spdlog::info(res);
+            if (neighbour.cell.getNumber() < (res + 1))
+            {
+                return false;
+            }
         }
     }
     return true;
 }
 
+std::size_t shakashaka::Cell::countAdjacentNeighbours(
+    const Board::neighbours_t &neighbours) const
+{
+    const auto counter = std::count_if(
+        neighbours.cbegin(), neighbours.cend(),
+        [this](const auto &neighbour) { return isAdjacent(neighbour); });
+    return static_cast<std::size_t>(counter);
+}
+
 bool shakashaka::Cell::isAdjacent(const Neighbour &neighbour) const
 {
-    switch (const auto neighbourCell = neighbour.cell; neighbour.position)
+    switch (const auto &neighbourCell = neighbour.cell; neighbour.position)
     {
-    case Neighbour::Position::up: {
+    case Neighbour::Position::up:
         return (neighbourCell.isBottomType() or neighbourCell.isNumber()) and
-               isUpperType();
-    }
-    case Neighbour::Position::down: {
+               (isNumber() or isUpperType());
+    case Neighbour::Position::down:
         return (neighbourCell.isUpperType() or neighbourCell.isNumber()) and
-               isBottomType();
-    }
-    case Neighbour::Position::left: {
+               (isNumber() or isBottomType());
+    case Neighbour::Position::left:
         return (neighbourCell.isRightType() or neighbourCell.isNumber()) and
-               isLeftType();
-    }
-    case Neighbour::Position::right: {
+               (isNumber() or isLeftType());
+    case Neighbour::Position::right:
         return (neighbourCell.isLeftType() or neighbourCell.isNumber()) and
-               isRightType();
+               (isNumber() or isRightType());
+    default:
+        return false;
     }
-    }
-    return false;
 }
 
 shakashaka::Board::neighbours_t shakashaka::Board::getNeighbours(
@@ -126,7 +149,7 @@ shakashaka::Board::neighbours_t shakashaka::Board::getNeighbours(
             {Neighbour::Position::left, {coordinate.row, coordinate.col - 1}},
             {Neighbour::Position::right, {coordinate.row, coordinate.col + 1}}};
     neighbours_t neighboursCoordinates;
-    for (auto &&[pos, cor] : availableNeighbours)
+    for (const auto &[pos, cor] : availableNeighbours)
     {
         if (isInRangeOfBoard(cor))
         {
@@ -141,7 +164,8 @@ shakashaka::Cell shakashaka::Board::getCell(const Coordinate &coordinate) const
 {
     if (not isInRangeOfBoard(coordinate))
     {
-        throw;
+        // todo: specify the type of exception
+        throw std::exception();
     }
     return board_.at(coordinate.row).at(coordinate.col);
 }

@@ -17,6 +17,29 @@ struct Coordinate
 };
 
 struct Neighbour;
+class Cell;
+class Board
+{
+  public:
+    using row_t = std::vector<Cell>;
+    using board_t = std::vector<row_t>;
+    using neighbours_t = std::vector<Neighbour>;
+
+    Board(const std::size_t size);
+    Board(const board_t &board);
+
+  private:
+    board_t board_ = {};
+
+    bool isInRangeOfBoard(const Coordinate coordinate) const;
+    bool isSettable(const Cell &cell, const Coordinate &coordinate) const;
+    neighbours_t getNeighbours(const Coordinate &coordinate) const;
+
+  public:
+    Cell getCell(const Coordinate &coordinate) const;
+    bool setCell(const Cell &cell, const Coordinate &coordinate);
+};
+
 class Cell
 {
   public:
@@ -47,6 +70,9 @@ class Cell
     bool isUpperType() const;
     bool isLeftType() const;
     bool isRightType() const;
+    std::size_t countAdjacentNeighbours(
+        const Board::neighbours_t &neighbour) const;
+    std::size_t getNumber() const;
 };
 
 struct Neighbour
@@ -62,27 +88,6 @@ struct Neighbour
     Position position;
     Coordinate coordinate;
     Cell cell;
-};
-class Board
-{
-  public:
-    using row_t = std::vector<Cell>;
-    using board_t = std::vector<row_t>;
-    using neighbours_t = std::vector<Neighbour>;
-
-    Board(const std::size_t size);
-    Board(const board_t &board);
-
-  private:
-    board_t board_ = {};
-
-    bool isInRangeOfBoard(const Coordinate coordinate) const;
-    bool isSettable(const Cell &cell, const Coordinate &coordinate) const;
-    neighbours_t getNeighbours(const Coordinate &coordinate) const;
-
-  public:
-    Cell getCell(const Coordinate &coordinate) const;
-    bool setCell(const Cell &cell, const Coordinate &coordinate);
 };
 } // namespace shakashaka
 #endif // AI_SHAKASHAKA_HH

@@ -5,7 +5,7 @@
 TEST(setCellTest, settingACellToADot)
 {
     // Arrange
-    const auto boardSize{5ull};
+    const auto boardSize{5ULL};
     shakashaka::Board board(boardSize);
     const auto cellToSet{shakashaka::Cell::Type::dot};
     const auto coordinate{shakashaka::Coordinate{2, 2}};
@@ -20,7 +20,7 @@ TEST(setCellTest, settingACellToADot)
 TEST(setCellTest, checkingIfWeCanInsertAnythingIntoABoardOfSizeZero)
 {
     // Arrange
-    const auto boardSize{0ull};
+    const auto boardSize{0ULL};
     shakashaka::Board board(boardSize);
     const auto cellToSet{shakashaka::Cell::Type::dot};
     const auto coordinate{shakashaka::Coordinate{2, 2}};
@@ -33,7 +33,7 @@ TEST(setCellTest, checkingIfWeCanInsertAnythingIntoABoardOfSizeZero)
 TEST(setCellTest, checkingIfICanInsertACellOutsideTheBoardRange)
 {
     // Arrange
-    const auto boardSize{3ull};
+    const auto boardSize{3ULL};
     shakashaka::Board board(boardSize);
     const auto cellToSet{shakashaka::Cell::Type::upperLeftCornerHalfShaded};
     const auto coordinate{shakashaka::Coordinate{3, 2}};
@@ -46,7 +46,7 @@ TEST(setCellTest, checkingIfICanInsertACellOutsideTheBoardRange)
 TEST(setCellTest, checkingIfICanInsertNumberCell)
 {
     // Arrange
-    const auto boardSize{3ull};
+    const auto boardSize{3ULL};
     shakashaka::Board board(boardSize);
     const auto cellToSet = shakashaka::Cell(2);
     const auto coordinate{shakashaka::Coordinate{2, 2}};
@@ -85,7 +85,7 @@ TEST_P(Board_Parametrized, testOfInsertingNewCellsIntoTheBoard)
     }
 }
 
-INSTANTIATE_TEST_CASE_P(
+INSTANTIATE_TEST_SUITE_P(
     settingACellWithADot, Board_Parametrized,
     ::testing::Values(
         BoardAndResultSetCell{
@@ -165,7 +165,7 @@ INSTANTIATE_TEST_CASE_P(
             shakashaka::Coordinate{0, 2},
             true}));
 
-INSTANTIATE_TEST_CASE_P(
+INSTANTIATE_TEST_SUITE_P(
     settingTheShadedCell, Board_Parametrized,
     ::testing::Values(
         BoardAndResultSetCell{
@@ -212,7 +212,7 @@ INSTANTIATE_TEST_CASE_P(
             shakashaka::Coordinate{0, 0},
             true}));
 
-INSTANTIATE_TEST_CASE_P(
+INSTANTIATE_TEST_SUITE_P(
     settingCellsUpperAZeroCell, Board_Parametrized,
     ::testing::Values(
         BoardAndResultSetCell{
@@ -255,7 +255,7 @@ INSTANTIATE_TEST_CASE_P(
             shakashaka::Coordinate{0, 1},
             true}));
 
-INSTANTIATE_TEST_CASE_P(
+INSTANTIATE_TEST_SUITE_P(
     settingCellsBottomAZeroCell, Board_Parametrized,
     ::testing::Values(
         BoardAndResultSetCell{
@@ -298,7 +298,7 @@ INSTANTIATE_TEST_CASE_P(
             shakashaka::Coordinate{2, 1},
             false}));
 
-INSTANTIATE_TEST_CASE_P(
+INSTANTIATE_TEST_SUITE_P(
     settingCellsLeftAZeroCell, Board_Parametrized,
     ::testing::Values(
         BoardAndResultSetCell{
@@ -341,7 +341,7 @@ INSTANTIATE_TEST_CASE_P(
             shakashaka::Coordinate{1, 0},
             true}));
 
-INSTANTIATE_TEST_CASE_P(
+INSTANTIATE_TEST_SUITE_P(
     settingCellsRightAZeroCell, Board_Parametrized,
     ::testing::Values(
         BoardAndResultSetCell{
@@ -384,7 +384,7 @@ INSTANTIATE_TEST_CASE_P(
             shakashaka::Coordinate{1, 2},
             false}));
 
-INSTANTIATE_TEST_CASE_P(
+INSTANTIATE_TEST_SUITE_P(
     settingDotAroundZeroCell, Board_Parametrized,
     ::testing::Values(
         BoardAndResultSetCell{
@@ -421,5 +421,77 @@ INSTANTIATE_TEST_CASE_P(
              {shakashaka::Cell::Type::empty, shakashaka::Cell::Type::empty,
               shakashaka::Cell::Type::empty}},
             shakashaka::Cell(shakashaka::Cell::Type::dot),
+            shakashaka::Coordinate{2, 1},
+            true}));
+
+INSTANTIATE_TEST_SUITE_P(
+    settingDotAroundNumberCell, Board_Parametrized,
+    ::testing::Values(
+        BoardAndResultSetCell{
+            {{shakashaka::Cell::Type::empty,
+              shakashaka::Cell::Type::upperRightCornerHalfShaded, 2},
+             {shakashaka::Cell::Type::empty, shakashaka::Cell::Type::empty,
+              shakashaka::Cell::Type::empty},
+             {shakashaka::Cell::Type::empty, shakashaka::Cell::Type::empty,
+              shakashaka::Cell::Type::empty}},
+            shakashaka::Cell(
+                shakashaka::Cell::Type::upperRightCornerHalfShaded),
+            shakashaka::Coordinate{1, 2},
+            true},
+        BoardAndResultSetCell{
+            {{shakashaka::Cell::Type::empty,
+              shakashaka::Cell::Type::upperRightCornerHalfShaded, 2},
+             {shakashaka::Cell::Type::empty, shakashaka::Cell::Type::empty,
+              shakashaka::Cell::Type::upperLeftCornerHalfShaded},
+             {shakashaka::Cell::Type::empty, shakashaka::Cell::Type::empty,
+              shakashaka::Cell::Type::empty}},
+            shakashaka::Cell(shakashaka::Cell::Type::upperLeftCornerHalfShaded),
+            shakashaka::Coordinate{1, 2},
+            false},
+        BoardAndResultSetCell{
+            {{shakashaka::Cell::Type::empty,
+              shakashaka::Cell::Type::bottomLeftCornerHalfShaded,
+              shakashaka::Cell::Type::empty},
+             {shakashaka::Cell::Type::upperRightCornerHalfShaded, 3,
+              shakashaka::Cell::Type::empty},
+             {shakashaka::Cell::Type::empty,
+              shakashaka::Cell::Type::upperRightCornerHalfShaded,
+              shakashaka::Cell::Type::empty}},
+            shakashaka::Cell(shakashaka::Cell::Type::upperLeftCornerHalfShaded),
+            shakashaka::Coordinate{2, 1},
+            false},
+        BoardAndResultSetCell{
+            {{shakashaka::Cell::Type::empty,
+              shakashaka::Cell::Type::bottomLeftCornerHalfShaded,
+              shakashaka::Cell::Type::empty},
+             {shakashaka::Cell::Type::upperRightCornerHalfShaded, 4,
+              shakashaka::Cell::Type::empty},
+             {shakashaka::Cell::Type::empty, shakashaka::Cell::Type::empty,
+              shakashaka::Cell::Type::empty}},
+            shakashaka::Cell(shakashaka::Cell::Type::upperLeftCornerHalfShaded),
+            shakashaka::Coordinate{2, 1},
+            true},
+        BoardAndResultSetCell{
+            {{shakashaka::Cell::Type::empty,
+              shakashaka::Cell::Type::upperRightCornerHalfShaded,
+              shakashaka::Cell::Type::empty},
+             {shakashaka::Cell::Type::upperLeftCornerHalfShaded, 4,
+              shakashaka::Cell::Type::upperRightCornerHalfShaded},
+             {shakashaka::Cell::Type::empty, shakashaka::Cell::Type::empty,
+              shakashaka::Cell::Type::empty}},
+            shakashaka::Cell(
+                shakashaka::Cell::Type::bottomLeftCornerHalfShaded),
+            shakashaka::Coordinate{2, 1},
+            true},
+        BoardAndResultSetCell{
+            {{shakashaka::Cell::Type::empty,
+              shakashaka::Cell::Type::bottomLeftCornerHalfShaded,
+              shakashaka::Cell::Type::empty},
+             {shakashaka::Cell::Type::bottomRightCornerHalfShaded, 3,
+              shakashaka::Cell::Type::empty},
+             {shakashaka::Cell::Type::empty, shakashaka::Cell::Type::empty,
+              shakashaka::Cell::Type::empty}},
+            shakashaka::Cell(
+                shakashaka::Cell::Type::upperRightCornerHalfShaded),
             shakashaka::Coordinate{2, 1},
             true}));
