@@ -88,19 +88,16 @@ bool shakashaka::Board::isSettable(const Cell &cell,
     }
     for (const auto &neighbour : getNeighbours(coordinate))
     {
-        if (const auto isAdjacent = cell.isAdjacent(neighbour);
-            isAdjacent and neighbour.cell.isZeroNumber())
+        if (cell.isAdjacentToZero(neighbour))
         {
             return false;
         }
-        else if (isAdjacent and neighbour.cell.isNumber())
+        else if (cell.isAdjacentToNumber(neighbour))
         {
-            const auto neighboursNeighbour =
-                getNeighbours(neighbour.coordinate);
-            auto res =
-                neighbour.cell.countAdjacentNeighbours(neighboursNeighbour);
-            spdlog::info(res);
-            if (neighbour.cell.getNumber() < (res + 1))
+            if (const auto neighboursCounter =
+                    neighbour.cell.countAdjacentNeighbours(
+                        getNeighbours(neighbour.coordinate));
+                neighbour.cell.getNumber() < (neighboursCounter + 1))
             {
                 return false;
             }
@@ -137,6 +134,15 @@ bool shakashaka::Cell::isAdjacent(const Neighbour &neighbour) const
     default:
         return false;
     }
+}
+bool shakashaka::Cell::isAdjacentToZero(const Neighbour &neighbour) const
+{
+    return isAdjacent(neighbour) and neighbour.cell.isZeroNumber();
+}
+
+bool shakashaka::Cell::isAdjacentToNumber(const Neighbour &neighbour) const
+{
+    return isAdjacent(neighbour) and neighbour.cell.isNumber();
 }
 
 shakashaka::Board::neighbours_t shakashaka::Board::getNeighbours(

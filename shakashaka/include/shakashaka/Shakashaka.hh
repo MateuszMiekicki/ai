@@ -65,6 +65,8 @@ class Cell
     bool isNumber() const;
     bool isZeroNumber() const;
     bool isAdjacent(const Neighbour &neighbour) const;
+    bool isAdjacentToZero(const Neighbour &neighbour) const;
+    bool isAdjacentToNumber(const Neighbour &neighbour) const;
     bool isDot() const;
     bool isBottomType() const;
     bool isUpperType() const;
