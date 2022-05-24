@@ -513,8 +513,7 @@ INSTANTIATE_TEST_SUITE_P(
         BoardAndResultSetCell{
             {{shakashaka::Cell::Type::fullyShaded, 2,
               shakashaka::Cell::Type::upperLeftCornerHalfShaded},
-             {shakashaka::Cell::Type::empty,
-              shakashaka::Cell::Type::empty,
+             {shakashaka::Cell::Type::empty, shakashaka::Cell::Type::empty,
               shakashaka::Cell::Type::fullyShaded},
              {shakashaka::Cell::Type::empty, shakashaka::Cell::Type::empty,
               shakashaka::Cell::Type::empty}},
