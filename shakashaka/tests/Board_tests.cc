@@ -13,8 +13,8 @@ TEST(setCellTest, settingACellToADot)
     const auto insertResult = board.setCell(cellToSet, coordinate);
     // Assert
     ASSERT_TRUE(insertResult);
-    const auto setUpBoardCcell{board.getCell(coordinate).getType()};
-    ASSERT_EQ(setUpBoardCcell, shakashaka::Cell::Type::dot);
+    const auto setUpBoardCell{board.getCell(coordinate).getType()};
+    ASSERT_EQ(setUpBoardCell, shakashaka::Cell::Type::dot);
 }
 
 TEST(setCellTest, checkingIfWeCanInsertAnythingIntoABoardOfSizeZero)
@@ -495,3 +495,41 @@ INSTANTIATE_TEST_SUITE_P(
                 shakashaka::Cell::Type::upperRightCornerHalfShaded),
             shakashaka::Coordinate{2, 1},
             true}));
+
+INSTANTIATE_TEST_SUITE_P(
+    settingCellOnFullShadedCell, Board_Parametrized,
+    ::testing::Values(
+        BoardAndResultSetCell{
+            {{shakashaka::Cell::Type::fullyShaded,
+              shakashaka::Cell::Type::empty, shakashaka::Cell::Type::empty},
+             {shakashaka::Cell::Type::empty, shakashaka::Cell::Type::empty,
+              shakashaka::Cell::Type::empty},
+             {shakashaka::Cell::Type::empty, shakashaka::Cell::Type::empty,
+              shakashaka::Cell::Type::empty}},
+            shakashaka::Cell(
+                shakashaka::Cell::Type::upperRightCornerHalfShaded),
+            shakashaka::Coordinate{0, 0},
+            false},
+        BoardAndResultSetCell{
+            {{shakashaka::Cell::Type::fullyShaded, 2,
+              shakashaka::Cell::Type::upperLeftCornerHalfShaded},
+             {shakashaka::Cell::Type::empty,
+              shakashaka::Cell::Type::empty,
+              shakashaka::Cell::Type::fullyShaded},
+             {shakashaka::Cell::Type::empty, shakashaka::Cell::Type::empty,
+              shakashaka::Cell::Type::empty}},
+            shakashaka::Cell(shakashaka::Cell::Type::upperLeftCornerHalfShaded),
+            shakashaka::Coordinate{1, 2},
+            false},
+        BoardAndResultSetCell{
+            {{shakashaka::Cell::Type::empty,
+              shakashaka::Cell::Type::bottomLeftCornerHalfShaded,
+              shakashaka::Cell::Type::empty},
+             {shakashaka::Cell::Type::upperRightCornerHalfShaded, 3,
+              shakashaka::Cell::Type::empty},
+             {shakashaka::Cell::Type::empty,
+              shakashaka::Cell::Type::upperRightCornerHalfShaded,
+              shakashaka::Cell::Type::empty}},
+            shakashaka::Cell(shakashaka::Cell::Type::fullyShaded),
+            shakashaka::Coordinate{2, 1},
+            false}));

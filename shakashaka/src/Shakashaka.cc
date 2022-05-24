@@ -54,9 +54,15 @@ bool shakashaka::Cell::isRightType() const
     return type_ == Type::bottomRightCornerHalfShaded or
            type_ == Type::upperRightCornerHalfShaded;
 }
+
 std::size_t shakashaka::Cell::getNumber() const
 {
     return number_.value_or(-1);
+}
+
+bool shakashaka::Cell::isAllowed() const
+{
+    return (type_ not_eq Type::number) and (type_ not_eq Type::fullyShaded);
 }
 
 shakashaka::Board::Board(const std::size_t size)
@@ -77,8 +83,8 @@ bool shakashaka::Board::isInRangeOfBoard(const Coordinate coordinate) const
 bool shakashaka::Board::isSettable(const Cell &cell,
                                    const Coordinate &coordinate) const
 {
-    if (not isInRangeOfBoard(coordinate) or cell.isNumber() or
-        getCell(coordinate).isNumber())
+    if (not isInRangeOfBoard(coordinate) or not cell.isAllowed() or
+        not getCell(coordinate).isAllowed())
     {
         return false;
     }

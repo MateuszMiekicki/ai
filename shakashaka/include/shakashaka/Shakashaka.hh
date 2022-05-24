@@ -46,8 +46,9 @@ class Cell
     enum class Type
     {
         empty = 0,
-        number,
+        fullyShaded,
         dot,
+        number,
         upperLeftCornerHalfShaded,
         bottomLeftCornerHalfShaded,
         upperRightCornerHalfShaded,
@@ -72,6 +73,7 @@ class Cell
     bool isUpperType() const;
     bool isLeftType() const;
     bool isRightType() const;
+    bool isAllowed() const;
     std::size_t countAdjacentNeighbours(
         const Board::neighbours_t &neighbour) const;
     std::size_t getNumber() const;
