@@ -56,6 +56,8 @@ TEST(setCellTest, checkingIfICanInsertNumberCell)
     ASSERT_FALSE(setCellResult);
 }
 
+namespace
+{
 struct BoardAndResultSetCell
 {
     shakashaka::Board::board_t board;
@@ -68,6 +70,7 @@ class Board_Parametrized
     : public ::testing::TestWithParam<BoardAndResultSetCell>
 {
 };
+} // namespace
 
 TEST_P(Board_Parametrized, testOfInsertingNewCellsIntoTheBoard)
 {

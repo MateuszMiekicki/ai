@@ -17,13 +17,18 @@ struct Coordinate
 };
 
 struct Neighbour;
+struct Corner;
 class Cell;
 class Board
 {
+  private:
+    std::shared_ptr<spdlog::logger> logger_ = nullptr;
+
   public:
     using row_t = std::vector<Cell>;
     using board_t = std::vector<row_t>;
     using neighbours_t = std::vector<Neighbour>;
+    using corners_t = std::vector<Neighbour>;
 
     Board(const std::size_t size);
     Board(const board_t &board);
@@ -34,10 +39,18 @@ class Board
     bool isInRangeOfBoard(const Coordinate coordinate) const;
     bool isSettable(const Cell &cell, const Coordinate &coordinate) const;
     neighbours_t getNeighbours(const Coordinate &coordinate) const;
+    void prepareCorner();
+    corners_t getCornersCoordinates() const;
 
   public:
     Cell getCell(const Coordinate &coordinate) const;
     bool setCell(const Cell &cell, const Coordinate &coordinate);
+    bool isSolved() const;
+    void prepareBoardToSolve();
+    inline bool operator==(const Board &oth) const
+    {
+        return board_ == oth.board_;
+    }
 };
 
 class Cell
@@ -73,10 +86,15 @@ class Cell
     bool isUpperType() const;
     bool isLeftType() const;
     bool isRightType() const;
-    bool isAllowed() const;
+    bool isSetable() const;
+    bool isEmpty() const;
     std::size_t countAdjacentNeighbours(
         const Board::neighbours_t &neighbour) const;
     std::size_t getNumber() const;
+    inline bool operator==(const Cell &oth) const
+    {
+        return type_ == oth.type_;
+    }
 };
 
 struct Neighbour
@@ -86,7 +104,11 @@ struct Neighbour
         up = 0,
         down,
         left,
-        right
+        right,
+        leftUp,
+        rightUp,
+        leftDown,
+        rightDown
     };
     Neighbour() = delete;
     Position position;

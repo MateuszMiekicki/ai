@@ -60,7 +60,7 @@ std::size_t shakashaka::Cell::getNumber() const
     return number_.value_or(-1);
 }
 
-bool shakashaka::Cell::isAllowed() const
+bool shakashaka::Cell::isSetable() const
 {
     return (type_ not_eq Type::number) and (type_ not_eq Type::fullyShaded);
 }
@@ -72,6 +72,18 @@ shakashaka::Board::Board(const std::size_t size)
 
 shakashaka::Board::Board(const board_t &board) : board_{board}
 {
+    //    try
+    //    {
+    //        logger_ = spdlog::basic_logger_mt(
+    //            logger::shakashaka.loggerName,
+    //            logger::shakashaka.loggerOutputFile.value());
+    //        logger_->set_level(spdlog::level::trace);
+    //        logger_->set_pattern(logger::defaultLoggerFormat);
+    //    }
+    //    catch (const spdlog::spdlog_ex &ex)
+    //    {
+    //        std::cerr << "Log init failed: " << ex.what() << '\n';
+    //    }
 }
 
 bool shakashaka::Board::isInRangeOfBoard(const Coordinate coordinate) const
@@ -83,8 +95,9 @@ bool shakashaka::Board::isInRangeOfBoard(const Coordinate coordinate) const
 bool shakashaka::Board::isSettable(const Cell &cell,
                                    const Coordinate &coordinate) const
 {
-    if (not isInRangeOfBoard(coordinate) or not cell.isAllowed() or
-        not getCell(coordinate).isAllowed())
+    // todo: refactoring this function Change statement to more readable
+    if (not isInRangeOfBoard(coordinate) or not cell.isSetable() or
+        not getCell(coordinate).isSetable())
     {
         return false;
     }
@@ -98,7 +111,7 @@ bool shakashaka::Board::isSettable(const Cell &cell,
         {
             return false;
         }
-        else if (cell.isAdjacentToNumber(neighbour))
+        if (cell.isAdjacentToNumber(neighbour))
         {
             if (const auto neighboursCounter =
                     neighbour.cell.countAdjacentNeighbours(
@@ -150,6 +163,10 @@ bool shakashaka::Cell::isAdjacentToNumber(const Neighbour &neighbour) const
 {
     return isAdjacent(neighbour) and neighbour.cell.isNumber();
 }
+bool shakashaka::Cell::isEmpty() const
+{
+    return type_ == Type::empty;
+}
 
 shakashaka::Board::neighbours_t shakashaka::Board::getNeighbours(
     const Coordinate &coordinate) const
@@ -157,7 +174,15 @@ shakashaka::Board::neighbours_t shakashaka::Board::getNeighbours(
     std::vector<std::pair<Neighbour::Position, Coordinate>>
         availableNeighbours = {
             {Neighbour::Position::up, {coordinate.row - 1, coordinate.col}},
+            {Neighbour::Position::leftUp,
+             {coordinate.row - 1, coordinate.col - 1}},
+            {Neighbour::Position::rightUp,
+             {coordinate.row - 1, coordinate.col + 1}},
             {Neighbour::Position::down, {coordinate.row + 1, coordinate.col}},
+            {Neighbour::Position::leftDown,
+             {coordinate.row + 1, coordinate.col - 1}},
+            {Neighbour::Position::rightDown,
+             {coordinate.row + 1, coordinate.col + 1}},
             {Neighbour::Position::left, {coordinate.row, coordinate.col - 1}},
             {Neighbour::Position::right, {coordinate.row, coordinate.col + 1}}};
     neighbours_t neighboursCoordinates;
@@ -190,4 +215,79 @@ bool shakashaka::Board::setCell(const Cell &cell, const Coordinate &coordinate)
     }
     board_.at(coordinate.row).at(coordinate.col) = cell;
     return true;
+}
+
+bool shakashaka::Board::isSolved() const
+{
+    return false;
+}
+
+void shakashaka::Board::prepareBoardToSolve()
+{
+    prepareCorner();
+}
+
+void shakashaka::Board::prepareCorner()
+{
+    if (board_.empty())
+    {
+        return;
+    }
+    for (const auto &[position, coordinate, cell] : getCornersCoordinates())
+    {
+        const auto neighbours = getNeighbours(coordinate);
+        if (const auto hasAllNeighboursEmpty = std::all_of(
+                neighbours.cbegin(), neighbours.cend(),
+                [](const auto neighbour) { return neighbour.cell.isEmpty(); });
+            cell.isSetable() and not hasAllNeighboursEmpty)
+        {
+            if (const auto hasDiagonalNeighbour = std::any_of(
+                    neighbours.begin(), neighbours.end(),
+                    [](const auto &neighbour) {
+                        const auto diagonalPosition = {
+                            Neighbour::Position::leftUp,
+                            Neighbour::Position::leftDown,
+                            Neighbour::Position::rightUp,
+                            Neighbour::Position::rightDown};
+                        return not neighbour.cell.isEmpty() and
+                               std::any_of(diagonalPosition.begin(),
+                                           diagonalPosition.end(),
+                                           [&neighbour](const auto pos) {
+                                               return pos == neighbour.position;
+                                           });
+                    });
+                hasDiagonalNeighbour)
+            {
+                std::for_each(neighbours.begin(), neighbours.end(),
+                              [this](const auto x) {
+                                  setCell(Cell::Type::dot, x.coordinate);
+                              });
+            }
+            setCell(Cell::Type::dot, coordinate);
+        }
+    }
+}
+
+shakashaka::Board::corners_t shakashaka::Board::getCornersCoordinates() const
+{
+    const auto lastRowIndex = board_.size() - 1;
+    const auto lastColIndex = board_.at(0).size() - 1;
+    const std::vector<std::pair<Neighbour::Position, Coordinate>>
+        cornersCoordinate = {
+            {Neighbour::Position::leftUp, Coordinate{0, 0}},
+            {Neighbour::Position::rightUp, Coordinate{0, lastColIndex}},
+            {Neighbour::Position::leftDown, Coordinate{lastRowIndex, 0}},
+            {Neighbour::Position::leftUp,
+             Coordinate{lastRowIndex, lastColIndex}},
+        };
+    corners_t result;
+    std::for_each(cornersCoordinate.cbegin(), cornersCoordinate.cend(),
+                  [this, &result](const auto cc) {
+                      if (isInRangeOfBoard(cc.second))
+                      {
+                          result.push_back(Neighbour{cc.first, cc.second,
+                                                     getCell(cc.second)});
+                      }
+                  });
+    return result;
 }

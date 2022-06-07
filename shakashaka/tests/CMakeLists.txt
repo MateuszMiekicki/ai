@@ -1,7 +1,7 @@
 include(${CMAKE_SOURCE_DIR}/third_party/googletest.cmake)
 project(shakashaka_tests LANGUAGES CXX)
 
-add_executable(${PROJECT_NAME} Board_tests.cc)
+add_executable(${PROJECT_NAME} Board_tests.cc Board_isSolved_tests.cc)
 
 target_link_libraries(${PROJECT_NAME}
         PRIVATE GTest::gtest
