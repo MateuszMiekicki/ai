@@ -17,7 +17,6 @@ struct Coordinate
 };
 
 struct Neighbour;
-struct Corner;
 class Cell;
 class Board
 {
@@ -38,9 +37,11 @@ class Board
 
     bool isInRangeOfBoard(const Coordinate coordinate) const;
     bool isSettable(const Cell &cell, const Coordinate &coordinate) const;
-    neighbours_t getNeighbours(const Coordinate &coordinate) const;
+    neighbours_t getNeighbours(const Coordinate &coordinate,
+                               const bool withDiagonal = true) const;
     void prepareCorner();
     corners_t getCornersCoordinates() const;
+    void setShadedFieldAroundCornerWithNumber(const Neighbour& neighbour);
 
   public:
     Cell getCell(const Coordinate &coordinate) const;
@@ -101,14 +102,14 @@ struct Neighbour
 {
     enum class Position
     {
-        up = 0,
-        down,
+        upper = 0,
+        bottom,
         left,
         right,
-        leftUp,
-        rightUp,
-        leftDown,
-        rightDown
+        upperLeft,
+        upperRight,
+        bottomRight,
+        bottomLeft
     };
     Neighbour() = delete;
     Position position;

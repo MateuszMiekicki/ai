@@ -3,18 +3,18 @@
 #include "shakashaka/Shakashaka.hh"
 namespace
 {
-struct PrepareBoard
+struct PrepareBoardParameter
 {
     shakashaka::Board::board_t board;
     shakashaka::Board::board_t boardAfterPrepare;
 };
 
-class PrepareBoard_Parametrized : public ::testing::TestWithParam<PrepareBoard>
+class PrepareBoard : public ::testing::TestWithParam<PrepareBoardParameter>
 {
 };
 } // namespace
 
-TEST_P(PrepareBoard_Parametrized, testOfInsertingNewCellsIntoTheBoard)
+TEST_P(PrepareBoard, testPrepareBoardToSolvingAlgorithm)
 {
     // Arrange
     using namespace shakashaka;
@@ -27,17 +27,153 @@ TEST_P(PrepareBoard_Parametrized, testOfInsertingNewCellsIntoTheBoard)
 }
 
 INSTANTIATE_TEST_SUITE_P(
-    prepareBoard, PrepareBoard_Parametrized,
-    ::testing::Values(PrepareBoard{
-        {
-        {shakashaka::Cell::Type::empty, shakashaka::Cell::Type::fullyShaded, shakashaka::Cell::Type::empty, shakashaka::Cell::Type::empty},
-         {shakashaka::Cell::Type::empty, shakashaka::Cell::Type::empty,shakashaka::Cell::Type::empty, shakashaka::Cell::Type::empty},
-         {shakashaka::Cell::Type::empty, shakashaka::Cell::Type::empty,shakashaka::Cell::Type::fullyShaded, shakashaka::Cell::Type::empty},
-         {shakashaka::Cell::Type::empty, shakashaka::Cell::Type::empty,shakashaka::Cell::Type::empty, shakashaka::Cell::Type::empty}
-        },
-        {
-            {shakashaka::Cell::Type::dot, shakashaka::Cell::Type::fullyShaded, shakashaka::Cell::Type::empty, shakashaka::Cell::Type::empty},
-            {shakashaka::Cell::Type::empty, shakashaka::Cell::Type::empty,shakashaka::Cell::Type::empty, shakashaka::Cell::Type::empty},
-            {shakashaka::Cell::Type::empty, shakashaka::Cell::Type::empty,shakashaka::Cell::Type::fullyShaded, shakashaka::Cell::Type::dot},
-            {shakashaka::Cell::Type::empty, shakashaka::Cell::Type::empty,shakashaka::Cell::Type::dot, shakashaka::Cell::Type::dot}
-        }}));
+    theDiagonalNeighbourOfTheCellInTheCornerIsAllShaded, PrepareBoard,
+    ::testing::Values(
+        PrepareBoardParameter{
+            {{shakashaka::Cell::Type::empty, shakashaka::Cell::Type::empty,
+              shakashaka::Cell::Type::empty, shakashaka::Cell::Type::empty},
+             {shakashaka::Cell::Type::empty,
+              shakashaka::Cell::Type::fullyShaded,
+              shakashaka::Cell::Type::empty, shakashaka::Cell::Type::empty},
+             {shakashaka::Cell::Type::empty, shakashaka::Cell::Type::empty,
+              shakashaka::Cell::Type::empty, shakashaka::Cell::Type::empty},
+             {shakashaka::Cell::Type::empty, shakashaka::Cell::Type::empty,
+              shakashaka::Cell::Type::empty, shakashaka::Cell::Type::empty}},
+            {{shakashaka::Cell::Type::dot, shakashaka::Cell::Type::dot,
+              shakashaka::Cell::Type::empty, shakashaka::Cell::Type::empty},
+             {shakashaka::Cell::Type::dot, shakashaka::Cell::Type::fullyShaded,
+              shakashaka::Cell::Type::empty, shakashaka::Cell::Type::empty},
+             {shakashaka::Cell::Type::empty, shakashaka::Cell::Type::empty,
+              shakashaka::Cell::Type::empty, shakashaka::Cell::Type::empty},
+             {shakashaka::Cell::Type::empty, shakashaka::Cell::Type::empty,
+              shakashaka::Cell::Type::empty, shakashaka::Cell::Type::empty}}},
+        PrepareBoardParameter{
+            {{shakashaka::Cell::Type::empty, shakashaka::Cell::Type::empty,
+              shakashaka::Cell::Type::empty, shakashaka::Cell::Type::empty},
+             {shakashaka::Cell::Type::empty, shakashaka::Cell::Type::empty,
+              shakashaka::Cell::Type::fullyShaded,
+              shakashaka::Cell::Type::empty},
+             {shakashaka::Cell::Type::empty, shakashaka::Cell::Type::empty,
+              shakashaka::Cell::Type::empty, shakashaka::Cell::Type::empty},
+             {shakashaka::Cell::Type::empty, shakashaka::Cell::Type::empty,
+              shakashaka::Cell::Type::empty, shakashaka::Cell::Type::empty}},
+            {{shakashaka::Cell::Type::empty, shakashaka::Cell::Type::empty,
+              shakashaka::Cell::Type::dot, shakashaka::Cell::Type::dot},
+             {shakashaka::Cell::Type::empty, shakashaka::Cell::Type::empty,
+              shakashaka::Cell::Type::fullyShaded, shakashaka::Cell::Type::dot},
+             {shakashaka::Cell::Type::empty, shakashaka::Cell::Type::empty,
+              shakashaka::Cell::Type::empty, shakashaka::Cell::Type::empty},
+             {shakashaka::Cell::Type::empty, shakashaka::Cell::Type::empty,
+              shakashaka::Cell::Type::empty, shakashaka::Cell::Type::empty}}},
+        PrepareBoardParameter{
+            {{shakashaka::Cell::Type::empty, shakashaka::Cell::Type::empty,
+              shakashaka::Cell::Type::empty, shakashaka::Cell::Type::empty},
+             {shakashaka::Cell::Type::empty, shakashaka::Cell::Type::empty,
+              shakashaka::Cell::Type::empty, shakashaka::Cell::Type::empty},
+             {shakashaka::Cell::Type::empty,
+              shakashaka::Cell::Type::fullyShaded,
+              shakashaka::Cell::Type::empty, shakashaka::Cell::Type::empty},
+             {shakashaka::Cell::Type::empty, shakashaka::Cell::Type::empty,
+              shakashaka::Cell::Type::empty, shakashaka::Cell::Type::empty}},
+            {{shakashaka::Cell::Type::empty, shakashaka::Cell::Type::empty,
+              shakashaka::Cell::Type::empty, shakashaka::Cell::Type::empty},
+             {shakashaka::Cell::Type::empty, shakashaka::Cell::Type::empty,
+              shakashaka::Cell::Type::empty, shakashaka::Cell::Type::empty},
+             {shakashaka::Cell::Type::dot, shakashaka::Cell::Type::fullyShaded,
+              shakashaka::Cell::Type::empty, shakashaka::Cell::Type::empty},
+             {shakashaka::Cell::Type::dot, shakashaka::Cell::Type::dot,
+              shakashaka::Cell::Type::empty, shakashaka::Cell::Type::empty}}},
+        PrepareBoardParameter{
+            {{shakashaka::Cell::Type::empty, shakashaka::Cell::Type::empty,
+              shakashaka::Cell::Type::empty, shakashaka::Cell::Type::empty},
+             {shakashaka::Cell::Type::empty, shakashaka::Cell::Type::empty,
+              shakashaka::Cell::Type::empty, shakashaka::Cell::Type::empty},
+             {shakashaka::Cell::Type::empty, shakashaka::Cell::Type::empty,
+              shakashaka::Cell::Type::fullyShaded,
+              shakashaka::Cell::Type::empty},
+             {shakashaka::Cell::Type::empty, shakashaka::Cell::Type::empty,
+              shakashaka::Cell::Type::empty, shakashaka::Cell::Type::empty}},
+            {{shakashaka::Cell::Type::empty, shakashaka::Cell::Type::empty,
+              shakashaka::Cell::Type::empty, shakashaka::Cell::Type::empty},
+             {shakashaka::Cell::Type::empty, shakashaka::Cell::Type::empty,
+              shakashaka::Cell::Type::empty, shakashaka::Cell::Type::empty},
+             {shakashaka::Cell::Type::empty, shakashaka::Cell::Type::empty,
+              shakashaka::Cell::Type::fullyShaded, shakashaka::Cell::Type::dot},
+             {shakashaka::Cell::Type::empty, shakashaka::Cell::Type::empty,
+              shakashaka::Cell::Type::dot, shakashaka::Cell::Type::dot}}}));
+
+INSTANTIATE_TEST_SUITE_P(
+    inTheCornerIsACellThatRequiresExactlyTwoAdjacentCells, PrepareBoard,
+    ::testing::Values(
+        PrepareBoardParameter{
+            {{2, shakashaka::Cell::Type::empty, shakashaka::Cell::Type::empty,
+              shakashaka::Cell::Type::empty},
+             {shakashaka::Cell::Type::empty, shakashaka::Cell::Type::empty,
+              shakashaka::Cell::Type::empty, shakashaka::Cell::Type::empty},
+             {shakashaka::Cell::Type::empty, shakashaka::Cell::Type::empty,
+              shakashaka::Cell::Type::empty, shakashaka::Cell::Type::empty},
+             {shakashaka::Cell::Type::empty, shakashaka::Cell::Type::empty,
+              shakashaka::Cell::Type::empty, shakashaka::Cell::Type::empty}},
+            {{2, shakashaka::Cell::Type::upperLeftCornerHalfShaded,
+              shakashaka::Cell::Type::empty, shakashaka::Cell::Type::empty},
+             {shakashaka::Cell::Type::upperLeftCornerHalfShaded,
+              shakashaka::Cell::Type::empty, shakashaka::Cell::Type::empty,
+              shakashaka::Cell::Type::empty},
+             {shakashaka::Cell::Type::empty, shakashaka::Cell::Type::empty,
+              shakashaka::Cell::Type::empty, shakashaka::Cell::Type::empty},
+             {shakashaka::Cell::Type::empty, shakashaka::Cell::Type::empty,
+              shakashaka::Cell::Type::empty, shakashaka::Cell::Type::empty}}},
+        PrepareBoardParameter{
+            {{shakashaka::Cell::Type::empty, shakashaka::Cell::Type::empty,
+              shakashaka::Cell::Type::empty, 2},
+             {shakashaka::Cell::Type::empty, shakashaka::Cell::Type::empty,
+              shakashaka::Cell::Type::empty, shakashaka::Cell::Type::empty},
+             {shakashaka::Cell::Type::empty, shakashaka::Cell::Type::empty,
+              shakashaka::Cell::Type::empty, shakashaka::Cell::Type::empty},
+             {shakashaka::Cell::Type::empty, shakashaka::Cell::Type::empty,
+              shakashaka::Cell::Type::empty, shakashaka::Cell::Type::empty}},
+            {{shakashaka::Cell::Type::empty, shakashaka::Cell::Type::empty,
+              shakashaka::Cell::Type::upperRightCornerHalfShaded, 2},
+             {shakashaka::Cell::Type::empty, shakashaka::Cell::Type::empty,
+              shakashaka::Cell::Type::empty,
+              shakashaka::Cell::Type::upperRightCornerHalfShaded},
+             {shakashaka::Cell::Type::empty, shakashaka::Cell::Type::empty,
+              shakashaka::Cell::Type::empty, shakashaka::Cell::Type::empty},
+             {shakashaka::Cell::Type::empty, shakashaka::Cell::Type::empty,
+              shakashaka::Cell::Type::empty, shakashaka::Cell::Type::empty}}},
+        PrepareBoardParameter{
+            {{shakashaka::Cell::Type::empty, shakashaka::Cell::Type::empty,
+              shakashaka::Cell::Type::empty, shakashaka::Cell::Type::empty},
+             {shakashaka::Cell::Type::empty, shakashaka::Cell::Type::empty,
+              shakashaka::Cell::Type::empty, shakashaka::Cell::Type::empty},
+             {shakashaka::Cell::Type::empty, shakashaka::Cell::Type::empty,
+              shakashaka::Cell::Type::empty, shakashaka::Cell::Type::empty},
+             {2, shakashaka::Cell::Type::empty, shakashaka::Cell::Type::empty,
+              shakashaka::Cell::Type::empty}},
+            {{shakashaka::Cell::Type::empty, shakashaka::Cell::Type::empty,
+              shakashaka::Cell::Type::empty, shakashaka::Cell::Type::empty},
+             {shakashaka::Cell::Type::empty, shakashaka::Cell::Type::empty,
+              shakashaka::Cell::Type::empty, shakashaka::Cell::Type::empty},
+             {shakashaka::Cell::Type::bottomLeftCornerHalfShaded,
+              shakashaka::Cell::Type::empty, shakashaka::Cell::Type::empty,
+              shakashaka::Cell::Type::empty},
+             {2, shakashaka::Cell::Type::bottomLeftCornerHalfShaded,
+              shakashaka::Cell::Type::empty, shakashaka::Cell::Type::empty}}},
+        PrepareBoardParameter{
+            {{shakashaka::Cell::Type::empty, shakashaka::Cell::Type::empty,
+              shakashaka::Cell::Type::empty, shakashaka::Cell::Type::empty},
+             {shakashaka::Cell::Type::empty, shakashaka::Cell::Type::empty,
+              shakashaka::Cell::Type::empty, shakashaka::Cell::Type::empty},
+             {shakashaka::Cell::Type::empty, shakashaka::Cell::Type::empty,
+              shakashaka::Cell::Type::empty, shakashaka::Cell::Type::empty},
+             {shakashaka::Cell::Type::empty, shakashaka::Cell::Type::empty,
+              shakashaka::Cell::Type::empty, 2}},
+            {{shakashaka::Cell::Type::empty, shakashaka::Cell::Type::empty,
+              shakashaka::Cell::Type::empty, shakashaka::Cell::Type::empty},
+             {shakashaka::Cell::Type::empty, shakashaka::Cell::Type::empty,
+              shakashaka::Cell::Type::empty, shakashaka::Cell::Type::empty},
+             {shakashaka::Cell::Type::empty, shakashaka::Cell::Type::empty,
+              shakashaka::Cell::Type::empty,
+              shakashaka::Cell::Type::bottomRightCornerHalfShaded},
+             {shakashaka::Cell::Type::empty, shakashaka::Cell::Type::empty,
+              shakashaka::Cell::Type::bottomRightCornerHalfShaded, 2}}}));

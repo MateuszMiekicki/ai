@@ -138,10 +138,10 @@ bool shakashaka::Cell::isAdjacent(const Neighbour &neighbour) const
 {
     switch (const auto &neighbourCell = neighbour.cell; neighbour.position)
     {
-    case Neighbour::Position::up:
+    case Neighbour::Position::upper:
         return (neighbourCell.isBottomType() or neighbourCell.isNumber()) and
                (isNumber() or isUpperType());
-    case Neighbour::Position::down:
+    case Neighbour::Position::bottom:
         return (neighbourCell.isUpperType() or neighbourCell.isNumber()) and
                (isNumber() or isBottomType());
     case Neighbour::Position::left:
@@ -168,23 +168,31 @@ bool shakashaka::Cell::isEmpty() const
     return type_ == Type::empty;
 }
 
+// todo: to split in two function, one with diagonal, one without
 shakashaka::Board::neighbours_t shakashaka::Board::getNeighbours(
-    const Coordinate &coordinate) const
+    const Coordinate &coordinate, const bool withDiagonal) const
 {
     std::vector<std::pair<Neighbour::Position, Coordinate>>
         availableNeighbours = {
-            {Neighbour::Position::up, {coordinate.row - 1, coordinate.col}},
-            {Neighbour::Position::leftUp,
-             {coordinate.row - 1, coordinate.col - 1}},
-            {Neighbour::Position::rightUp,
-             {coordinate.row - 1, coordinate.col + 1}},
-            {Neighbour::Position::down, {coordinate.row + 1, coordinate.col}},
-            {Neighbour::Position::leftDown,
-             {coordinate.row + 1, coordinate.col - 1}},
-            {Neighbour::Position::rightDown,
-             {coordinate.row + 1, coordinate.col + 1}},
+            {Neighbour::Position::upper, {coordinate.row - 1, coordinate.col}},
+            {Neighbour::Position::bottom, {coordinate.row + 1, coordinate.col}},
             {Neighbour::Position::left, {coordinate.row, coordinate.col - 1}},
             {Neighbour::Position::right, {coordinate.row, coordinate.col + 1}}};
+    if (withDiagonal)
+    {
+        availableNeighbours.push_back(
+            {Neighbour::Position::bottomLeft,
+             {coordinate.row + 1, coordinate.col - 1}});
+        availableNeighbours.push_back(
+            {Neighbour::Position::bottomRight,
+             {coordinate.row + 1, coordinate.col + 1}});
+        availableNeighbours.push_back(
+            {Neighbour::Position::upperLeft,
+             {coordinate.row - 1, coordinate.col - 1}});
+        availableNeighbours.push_back(
+            {Neighbour::Position::upperRight,
+             {coordinate.row - 1, coordinate.col + 1}});
+    }
     neighbours_t neighboursCoordinates;
     for (const auto &[pos, cor] : availableNeighbours)
     {
@@ -235,28 +243,83 @@ void shakashaka::Board::prepareCorner()
     }
     for (const auto &[position, coordinate, cell] : getCornersCoordinates())
     {
+        if (cell.isNumber())
+        {
+            if (cell.getNumber() > 2)
+            {
+                throw std::exception();
+            }
+            if (const auto neighbours = getNeighbours(coordinate, false);
+                cell.isZeroNumber())
+            {
+
+                std::for_each(neighbours.cbegin(), neighbours.cend(),
+                              [this](const auto &neighbour) {
+                                  setCell(Cell::Type::dot,
+                                          neighbour.coordinate);
+                              });
+            }
+            else if (cell.getNumber() == 2)
+            {
+                switch (position)
+                {
+                case Neighbour::Position::bottomLeft: {
+                    setCell(Cell::Type::bottomLeftCornerHalfShaded,
+                            {coordinate.row - 1, coordinate.col});
+                    setCell(Cell::Type::bottomLeftCornerHalfShaded,
+                            {coordinate.row, coordinate.col + 1});
+                }
+                    continue;
+                case Neighbour::Position::bottomRight: {
+                    setCell(Cell::Type::bottomRightCornerHalfShaded,
+                            {coordinate.row - 1, coordinate.col});
+                    setCell(Cell::Type::bottomRightCornerHalfShaded,
+                            {coordinate.row, coordinate.col - 1});
+                }
+                    continue;
+                case Neighbour::Position::upperLeft: {
+                    setCell(Cell::Type::upperLeftCornerHalfShaded,
+                            {coordinate.row, coordinate.col + 1});
+                    setCell(Cell::Type::upperLeftCornerHalfShaded,
+                            {coordinate.row + 1, coordinate.col});
+                }
+                    continue;
+                case Neighbour::Position::upperRight: {
+                    setCell(Cell::Type::upperRightCornerHalfShaded,
+                            {coordinate.row, coordinate.col - 1});
+                    setCell(Cell::Type::upperRightCornerHalfShaded,
+                            {coordinate.row + 1, coordinate.col});
+                }
+                    continue;
+                default:
+                    continue;
+                }
+            }
+        }
+
         const auto neighbours = getNeighbours(coordinate);
         if (const auto hasAllNeighboursEmpty = std::all_of(
                 neighbours.cbegin(), neighbours.cend(),
                 [](const auto neighbour) { return neighbour.cell.isEmpty(); });
             cell.isSetable() and not hasAllNeighboursEmpty)
         {
-            if (const auto hasDiagonalNeighbour = std::any_of(
+            if (const auto hasDiagonalNeighbourFullyShaded = std::any_of(
                     neighbours.begin(), neighbours.end(),
                     [](const auto &neighbour) {
                         const auto diagonalPosition = {
-                            Neighbour::Position::leftUp,
-                            Neighbour::Position::leftDown,
-                            Neighbour::Position::rightUp,
-                            Neighbour::Position::rightDown};
-                        return not neighbour.cell.isEmpty() and
+                            Neighbour::Position::upperLeft,
+                            Neighbour::Position::bottomLeft,
+                            Neighbour::Position::upperRight,
+                            Neighbour::Position::bottomRight};
+                        return neighbour.cell.getType() ==
+                                   Cell::Type::fullyShaded and
                                std::any_of(diagonalPosition.begin(),
                                            diagonalPosition.end(),
                                            [&neighbour](const auto pos) {
                                                return pos == neighbour.position;
                                            });
                     });
-                hasDiagonalNeighbour)
+                hasDiagonalNeighbourFullyShaded)
             {
                 std::for_each(neighbours.begin(), neighbours.end(),
                               [this](const auto x) {
@@ -268,16 +331,22 @@ void shakashaka::Board::prepareCorner()
     }
 }
 
+void shakashaka::Board::setShadedFieldAroundCornerWithNumber(
+    const Neighbour &)
+{
+    //neighbour
+}
+
 shakashaka::Board::corners_t shakashaka::Board::getCornersCoordinates() const
 {
     const auto lastRowIndex = board_.size() - 1;
     const auto lastColIndex = board_.at(0).size() - 1;
     const std::vector<std::pair<Neighbour::Position, Coordinate>>
         cornersCoordinate = {
-            {Neighbour::Position::leftUp, Coordinate{0, 0}},
-            {Neighbour::Position::rightUp, Coordinate{0, lastColIndex}},
-            {Neighbour::Position::leftDown, Coordinate{lastRowIndex, 0}},
-            {Neighbour::Position::leftUp,
+            {Neighbour::Position::upperLeft, Coordinate{0, 0}},
+            {Neighbour::Position::upperRight, Coordinate{0, lastColIndex}},
+            {Neighbour::Position::bottomLeft, Coordinate{lastRowIndex, 0}},
+            {Neighbour::Position::bottomRight,
              Coordinate{lastRowIndex, lastColIndex}},
         };
     corners_t result;
