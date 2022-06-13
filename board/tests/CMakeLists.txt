@@ -1,15 +1,12 @@
 include(${CMAKE_SOURCE_DIR}/third_party/googletest.cmake)
-project(shakashaka_tests LANGUAGES CXX)
+project(shakashaka_ut LANGUAGES CXX)
 
-add_executable(${PROJECT_NAME} Board_tests.cc Board_isSolved_tests.cc)
-
+add_executable(${PROJECT_NAME} Board_SetCellTest.cc)
 target_link_libraries(${PROJECT_NAME}
         PRIVATE GTest::gtest
         PRIVATE GTest::gtest_main
-        PRIVATE shakashaka::shakashaka
+        PRIVATE shakashaka::board
         )
-
-target_include_directories(${PROJECT_NAME} PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/../include)
 target_include_directories(${PROJECT_NAME} PRIVATE ${gtest_SOURCE_DIR}/include)
 set_target_properties(${PROJECT_NAME}
         PROPERTIES

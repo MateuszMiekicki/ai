@@ -1,8 +1,10 @@
-project(hill_climbing_algorithm VERSION 0.1.0 LANGUAGES CXX)
-aux_source_directory(. SOURCE)
+project(board VERSION 0.1.0 LANGUAGES CXX)
 
-add_executable(${PROJECT_NAME} ${SOURCE})
-
+set(SOURCE Board.cc
+        Cell.cc)
+add_library(${PROJECT_NAME}
+        ${SOURCE}
+        )
 set_target_properties(${PROJECT_NAME}
         PROPERTIES
         VERSION ${PROJECT_VERSION}
@@ -14,22 +16,16 @@ set_target_properties(${PROJECT_NAME}
         CXX_EXTENSIONS OFF
         CXX_STANDARD_REQUIRED ON
         )
-
+add_library(shakashaka::board ALIAS ${PROJECT_NAME})
 target_include_directories(${PROJECT_NAME}
-        PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/../include
+        PUBLIC ${CMAKE_SOURCE_DIR}/include/shakashaka/board
         )
 
 include(CompilationFlags)
 if (CMAKE_BUILD_TYPE STREQUAL "Release")
-    if (MSVC)
-    else ()
-        target_compile_options(${PROJECT_NAME} PRIVATE ${GCC_FLAGS})
-    endif ()
+    list(APPEND GCC_FLAGS -DNDEBUG -O3)
+    target_compile_options(${PROJECT_NAME} PRIVATE ${GCC_FLAGS})
 else ()
-    if (MSVC)
-    else ()
-        list(APPEND GCC_FLAGS -g3 -DNDEBUG)
-        target_compile_options(${PROJECT_NAME} PRIVATE ${GCC_FLAGS})
-    endif ()
+    list(APPEND GCC_FLAGS -g3 -O0)
+    target_compile_options(${PROJECT_NAME} PRIVATE ${GCC_FLAGS})
 endif ()
-

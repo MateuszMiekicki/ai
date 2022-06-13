@@ -1,7 +1,6 @@
-project(shakashaka VERSION 0.1.0 LANGUAGES CXX)
-include(${CMAKE_SOURCE_DIR}/third_party/spdlog.cmake)
+project(solver VERSION 0.1.0 LANGUAGES CXX)
 
-aux_source_directory(. SOURCE)
+set(SOURCE Solver.cc)
 add_library(${PROJECT_NAME}
         ${SOURCE}
         )
@@ -16,15 +15,13 @@ set_target_properties(${PROJECT_NAME}
         CXX_EXTENSIONS OFF
         CXX_STANDARD_REQUIRED ON
         )
-add_library(shakashaka::shakashaka ALIAS ${PROJECT_NAME})
-
+add_library(shakashaka::solver ALIAS ${PROJECT_NAME})
 target_include_directories(${PROJECT_NAME}
-        PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/../include
-        PUBLIC ${spdlog_SOURCE_DIR}/include
+        PUBLIC ${CMAKE_SOURCE_DIR}/include/shakashaka/solver
         )
-add_dependencies(${PROJECT_NAME} spdlog::spdlog)
+add_dependencies(${PROJECT_NAME} shakashaka::board)
 target_link_libraries(${PROJECT_NAME}
-        PUBLIC spdlog::spdlog
+        PUBLIC shakashaka::board
         )
 
 include(CompilationFlags)
