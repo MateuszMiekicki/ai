@@ -1,6 +1,6 @@
 #ifndef AI_NEIGHBOUR_HH
 #define AI_NEIGHBOUR_HH
-#include <Coordinate.hh>
+#include "Coordinate.hh"
 
 namespace shakashaka::board
 {

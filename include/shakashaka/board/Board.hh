@@ -26,8 +26,7 @@ class Board
     bool isSettable(const Cell &cell, const Coordinate &coordinate) const;
 
   public:
-    neighbours_t getNeighbours(const Coordinate &coordinate,
-                               const bool withDiagonal = true) const;
+    neighbours_t getNeighbours(const Coordinate &coordinate, const bool withDiagonal = true) const;
     corners_t getCornersCoordinates() const;
     Cell getCell(const Coordinate &coordinate) const;
     bool setCell(const Cell &cell, const Coordinate &coordinate);

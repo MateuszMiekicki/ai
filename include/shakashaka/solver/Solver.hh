@@ -18,8 +18,7 @@ class Solver
 
   private:
     void prepareCorner();
-    void setShadedFieldAroundCornerWithNumber(
-        const shakashaka::board::Neighbour &neighbour);
+    void setShadedFieldAroundCornerWithNumber(const shakashaka::board::Neighbour &neighbour);
     bool isSolved() const;
 };
 } // namespace shakashaka::solver

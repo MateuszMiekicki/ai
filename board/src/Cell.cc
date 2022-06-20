@@ -2,8 +2,7 @@
 #include "Neighbour.hh"
 #include <algorithm>
 
-shakashaka::board::Cell::Cell(const std::size_t number)
-    : type_{Type::number}, number_{number}
+shakashaka::board::Cell::Cell(const std::size_t number) : type_{Type::number}, number_{number}
 {
 }
 
@@ -33,26 +32,22 @@ bool shakashaka::board::Cell::isDot() const
 
 bool shakashaka::board::Cell::isBottomType() const
 {
-    return type_ == Type::bottomRightCornerHalfShaded or
-           type_ == Type::bottomLeftCornerHalfShaded;
+    return type_ == Type::bottomRightCornerHalfShaded or type_ == Type::bottomLeftCornerHalfShaded;
 }
 
 bool shakashaka::board::Cell::isUpperType() const
 {
-    return type_ == Type::upperRightCornerHalfShaded or
-           type_ == Type::upperLeftCornerHalfShaded;
+    return type_ == Type::upperRightCornerHalfShaded or type_ == Type::upperLeftCornerHalfShaded;
 }
 
 bool shakashaka::board::Cell::isLeftType() const
 {
-    return type_ == Type::bottomLeftCornerHalfShaded or
-           type_ == Type::upperLeftCornerHalfShaded;
+    return type_ == Type::bottomLeftCornerHalfShaded or type_ == Type::upperLeftCornerHalfShaded;
 }
 
 bool shakashaka::board::Cell::isRightType() const
 {
-    return type_ == Type::bottomRightCornerHalfShaded or
-           type_ == Type::upperRightCornerHalfShaded;
+    return type_ == Type::bottomRightCornerHalfShaded or type_ == Type::upperRightCornerHalfShaded;
 }
 
 std::size_t shakashaka::board::Cell::getNumber() const
@@ -68,9 +63,9 @@ bool shakashaka::board::Cell::isSetable() const
 std::size_t shakashaka::board::Cell::countAdjacentNeighbours(
     const Board::neighbours_t &neighbours) const
 {
-    const auto counter = std::count_if(
-        neighbours.cbegin(), neighbours.cend(),
-        [this](const auto &neighbour) { return isAdjacent(neighbour); });
+    const auto counter =
+        std::count_if(neighbours.cbegin(), neighbours.cend(),
+                      [this](const auto &neighbour) { return isAdjacent(neighbour); });
     return static_cast<std::size_t>(counter);
 }
 
@@ -99,8 +94,7 @@ bool shakashaka::board::Cell::isAdjacentToZero(const Neighbour &neighbour) const
     return isAdjacent(neighbour) and neighbour.cell.isZeroNumber();
 }
 
-bool shakashaka::board::Cell::isAdjacentToNumber(
-    const Neighbour &neighbour) const
+bool shakashaka::board::Cell::isAdjacentToNumber(const Neighbour &neighbour) const
 {
     return isAdjacent(neighbour) and neighbour.cell.isNumber();
 }

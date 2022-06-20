@@ -1,6 +1,6 @@
 #ifndef AI_CELL_HH
 #define AI_CELL_HH
-#include <Board.hh>
+#include "Board.hh"
 #include <cstdint>
 #include <optional>
 
@@ -42,8 +42,7 @@ class Cell
     bool isRightType() const;
     bool isSetable() const;
     bool isEmpty() const;
-    std::size_t countAdjacentNeighbours(
-        const Board::neighbours_t &neighbour) const;
+    std::size_t countAdjacentNeighbours(const Board::neighbours_t &neighbour) const;
     std::size_t getNumber() const;
     inline bool operator==(const Cell &oth) const
     {
