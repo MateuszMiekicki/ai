@@ -1,23 +1,19 @@
 #ifndef KNAPSACK_ITEM_HH
 #define KNAPSACK_ITEM_HH
+#include "Decimal.hh"
 
 namespace knapsack
 {
 class Item
 {
-  public:
-    using price_t = long double;
-    using weight_t = long double;
-    using ratio_t = long double;
-
   private:
-    price_t price_;
-    weight_t weight_;
+    Value value_;
+    Weight weight_;
 
   public:
-    Item(const price_t price, const weight_t weight);
+    Item(const Value value, const Weight weight);
 
-    ratio_t costEffectivenessRatio() const;
+    Ratio costEffectivenessRatio() const;
 
     bool operator==(const Item &item) const;
     bool operator!=(const Item &item) const;
@@ -27,6 +23,9 @@ class Item
 
     bool operator<=(const Item &item) const;
     bool operator>=(const Item &item) const;
+
+    Value getValue() const;
+    Weight getWeight() const;
 };
 } // namespace knapsack
 

@@ -3,17 +3,17 @@
 
 namespace knapsack
 {
-Item::Item(const price_t price, const weight_t weight) : price_{price}, weight_{weight}
+Item::Item(const Value value, const Weight weight) : value_{value}, weight_{weight}
 {
 }
 
-Item::ratio_t Item::costEffectivenessRatio() const
+Ratio Item::costEffectivenessRatio() const
 {
-    if (weight_ == 0.0)
+    if (weight_.value == 0.0L)
     {
-        throw std::invalid_argument("");
+        throw std::invalid_argument("The weight must not be zero");
     }
-    return price_ / weight_;
+    return {value_.value / weight_.value};
 }
 
 bool Item::operator==(const Item &item) const
@@ -21,10 +21,6 @@ bool Item::operator==(const Item &item) const
     return (costEffectivenessRatio() == item.costEffectivenessRatio());
 }
 
-bool Item::operator!=(const Item &item) const
-{
-    return not(*this == item);
-}
 
 bool Item::operator<(const Item &item) const
 {
@@ -36,14 +32,14 @@ bool Item::operator>(const Item &item) const
     return (costEffectivenessRatio() > item.costEffectivenessRatio());
 }
 
-bool Item::operator<=(const Item &item) const
+
+Value Item::getValue() const
 {
-    return (costEffectivenessRatio() <= item.costEffectivenessRatio());
+    return value_;
 }
 
-bool Item::operator>=(const Item &item) const
+Weight Item::getWeight() const
 {
-    return (costEffectivenessRatio() >= item.costEffectivenessRatio());
+    return weight_;
 }
-
 } // namespace knapsack

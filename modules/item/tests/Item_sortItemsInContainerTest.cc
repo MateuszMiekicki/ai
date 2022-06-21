@@ -1,6 +1,7 @@
 #include <gtest/gtest.h>
 
 #include "Item.hh"
+#include <algorithm>
 
 struct Parameters
 {
@@ -23,9 +24,34 @@ TEST_P(Items, comparingTwoItemsAndDeterminingWhichIsMoreCostEffective)
     ASSERT_EQ(lhsIsMoreCostEffective, lhsIsMoreCostEffective_p);
 }
 
-INSTANTIATE_TEST_SUITE_P(theDiagonalNeighbourOfTheCellInTheCornerIsAllShaded, Items,
-                         ::testing::Values(Parameters{{12.6, 1.0}, {3.2, 100.0}, true},
-                                           Parameters{{3.0, 1.0}, {5.0, 1.0}, false},
-                                           Parameters{{5.001, 1.0}, {5.0, 1.0}, true},
-                                           Parameters{{3.0, .5}, {5.0, 1.0}, true},
-                                           Parameters{{123.0, 100.0}, {1230.0, 998.999}, false}));
+INSTANTIATE_TEST_SUITE_P(mathematicalOperators, Items,
+                         ::testing::Values(Parameters{{{12.6}, {1.0}}, {{3.2}, {100.0}}, true},
+                                           Parameters{{{3.0}, {1.0}}, {{5.0}, {1.0}}, false},
+                                           Parameters{{{5.001}, {1.0}}, {{5.0}, {1.0}}, true},
+                                           Parameters{{{3.0}, {.5}}, {{5.0}, {1.0}}, true},
+                                           Parameters{
+                                               {{123.0}, {100.0}}, {{1230.0}, {998.999}}, false}));
+
+TEST(SortItems, sortThreeDiffrentItems)
+{
+    std::vector<knapsack::Item> items;
+    items.push_back({{3.0}, {1.0}});
+    items.push_back({{5.6}, {.5}});
+    items.push_back({{110.6}, {1000.0}});
+    std::sort(items.begin(), items.end(), std::greater<knapsack::Item>());
+    const std::vector<knapsack::Item> expectedOrder = {knapsack::Item{{5.6}, {.5}},
+                                                       knapsack::Item{{3.0}, {1.0}},
+                                                       knapsack::Item{{110.6}, {1000.0}}};
+    ASSERT_TRUE(std::equal(items.begin(), items.end(), expectedOrder.begin()));
+}
+
+TEST(SortItems, sortThreeSameItems)
+{
+    std::vector<knapsack::Item> items;
+    items.push_back({{3.0}, {1.0}});
+    items.push_back({{3.0}, {1.0}});
+    items.push_back({{3.0}, {1.0}});
+    std::sort(items.begin(), items.end(), std::greater<knapsack::Item>());
+    const std::vector<knapsack::Item> expectedOrder(3, knapsack::Item{{3.0}, {1.0}});
+    ASSERT_TRUE(std::equal(items.begin(), items.end(), expectedOrder.begin()));
+}

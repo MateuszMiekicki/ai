@@ -1,6 +1,6 @@
-project(item VERSION 0.1.0 LANGUAGES CXX)
+project(knapsack VERSION 0.1.0 LANGUAGES CXX)
 
-set(SOURCE Item.cc)
+set(SOURCE Knapsack.cc)
 add_library(${PROJECT_NAME}
         ${SOURCE}
         )
@@ -15,10 +15,14 @@ set_target_properties(${PROJECT_NAME}
         CXX_EXTENSIONS OFF
         CXX_STANDARD_REQUIRED ON
         )
-add_library(knapsack::item ALIAS ${PROJECT_NAME})
+add_library(knapsack::knapsack ALIAS ${PROJECT_NAME})
 target_include_directories(${PROJECT_NAME}
-        PUBLIC ${CMAKE_SOURCE_DIR}/include/knapsack/item
+        PUBLIC ${CMAKE_SOURCE_DIR}/include/knapsack/knapsack
         PUBLIC ${CMAKE_SOURCE_DIR}/include/knapsack/value
+        )
+add_dependencies(${PROJECT_NAME} knapsack::item)
+target_link_libraries(${PROJECT_NAME}
+        PUBLIC knapsack::item
         )
 target_compile_options(
         ${PROJECT_NAME}
