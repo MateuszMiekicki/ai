@@ -1,2 +1,2 @@
-add_subdirectory(item)
 add_subdirectory(knapsack)
+add_subdirectory(algorithm)

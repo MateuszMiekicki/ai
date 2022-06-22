@@ -1,11 +1,11 @@
 include(${CMAKE_SOURCE_DIR}/third_party/googletest.cmake)
-project(knapsack_ut LANGUAGES CXX)
+project(bin_ut LANGUAGES CXX)
 
-add_executable(${PROJECT_NAME} Knapsack_calculateWeightAndValueItems.cc)
+add_executable(${PROJECT_NAME} Bin_calculateWeightAndValueItems.cc)
 target_link_libraries(${PROJECT_NAME}
         PRIVATE GTest::gtest
         PRIVATE GTest::gtest_main
-        PRIVATE knapsack::knapsack
+        PRIVATE knapsack::bin
         )
 target_include_directories(${PROJECT_NAME} PRIVATE ${gtest_SOURCE_DIR}/include)
 set_target_properties(${PROJECT_NAME}

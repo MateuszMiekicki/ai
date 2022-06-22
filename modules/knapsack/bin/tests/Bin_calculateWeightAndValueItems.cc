@@ -1,7 +1,7 @@
 #include <gtest/gtest.h>
 
+#include "Bin.hh"
 #include "Item.hh"
-#include "Knapsack.hh"
 #include <algorithm>
 
 struct Parameters
@@ -20,7 +20,7 @@ TEST_P(Calculate, CalculationOfWeightAndValueOfAllItems)
     // Arrange
     const auto &[items, expectedValue, expectedWeight] = GetParam();
     // Act
-    const auto knapsack = knapsack::Knapsack(0, items);
+    const auto knapsack = knapsack::Bin(0, items);
     const auto value = knapsack.value();
     const auto weight = knapsack.weight();
     // Assert

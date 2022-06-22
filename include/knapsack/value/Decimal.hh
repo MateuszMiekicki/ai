@@ -12,8 +12,8 @@ template <typename Tag> struct Decimal
 
     Decimal(const Decimal &) = default;
     Decimal &operator=(const Decimal &) = default;
-    Decimal(Decimal &&) = default;
-    Decimal &operator=(Decimal &&) = default;
+    Decimal(Decimal &&) noexcept = default;
+    Decimal &operator=(Decimal &&) noexcept = default;
 
     bool operator==(const Decimal<Tag> &rhs)
     {
