@@ -18,9 +18,11 @@ class Bin
     Bin(const Weight &capacity, const items_t &items);
     explicit Bin(const Weight &capacity);
     void fill(const items_t &items);
+    bool isFits(const Item &item) const;
     Value value() const;
     Weight weight() const;
     Weight capacity() const;
+    void add(const Item& item);
 };
 } // namespace knapsack
 #endif // KNAPSACK_BIN_HH

@@ -13,10 +13,15 @@ Bin::Bin(const Weight &capacity) : Bin(capacity, {})
 {
 }
 
+bool Bin::isFits(const Item &item) const
+{
+    return ((weight() + item.weight()) <= capacity());
+}
+
 void Bin::fill(const items_t &items)
 {
     std::for_each(items.cbegin(), items.cend(), [this](const auto &item) {
-        if ((weight() + item.weight()) <= capacity())
+        if (isFits(item))
         {
             items_.push_back(item);
         }
@@ -39,4 +44,8 @@ Weight Bin::capacity() const
     return capacity_;
 }
 
+void Bin::add(const Item& item)
+{
+    items_.emplace_back(item);
+}
 } // namespace knapsack

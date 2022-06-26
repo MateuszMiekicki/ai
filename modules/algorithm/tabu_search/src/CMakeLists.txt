@@ -1,6 +1,6 @@
-project(hill_climbing VERSION 0.1.0 LANGUAGES CXX)
+project(tabu_search VERSION 0.1.0 LANGUAGES CXX)
 
-set(SOURCE HillClimbing.cc)
+set(SOURCE TabuSearch.cc)
 add_library(${PROJECT_NAME}
         ${SOURCE}
         )
@@ -15,9 +15,9 @@ set_target_properties(${PROJECT_NAME}
         CXX_EXTENSIONS OFF
         CXX_STANDARD_REQUIRED ON
         )
-add_library(knapsack::algorithm::hill_climbing ALIAS ${PROJECT_NAME})
+add_library(knapsack::algorithm::tabu_search ALIAS ${PROJECT_NAME})
 target_include_directories(${PROJECT_NAME}
-        PUBLIC ${CMAKE_SOURCE_DIR}/include/knapsack/algorithm/hill_climbing
+        PUBLIC ${CMAKE_SOURCE_DIR}/include/knapsack/algorithm/tabu_search
         PUBLIC ${CMAKE_SOURCE_DIR}/include/knapsack/algorithm/solver
         )
 add_dependencies(${PROJECT_NAME} knapsack::bin)

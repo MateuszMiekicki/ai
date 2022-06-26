@@ -1,1 +1,2 @@
 add_subdirectory(hill_climbing)
+add_subdirectory(tabu_search)
