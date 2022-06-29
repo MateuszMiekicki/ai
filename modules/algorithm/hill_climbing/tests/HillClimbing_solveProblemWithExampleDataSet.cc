@@ -27,7 +27,8 @@ TEST_P(HillClimbingSolver, testingDeterministicOrderItems)
     using namespace knapsack::algorithm;
     Bin bin{binCapacity};
     prepareItems(items, binCapacity, deterministic);
-    std::unique_ptr<Solver> solver = std::make_unique<HillClimbing>(iteration, bin, items);
+    knapsack::algorithm::Parameters parameters{iteration};
+    std::unique_ptr<Solver> solver = std::make_unique<HillClimbing>(bin, items, parameters);
     // Act
     solver->solve();
     // Assert

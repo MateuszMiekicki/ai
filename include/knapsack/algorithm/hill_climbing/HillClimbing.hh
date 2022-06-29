@@ -2,6 +2,7 @@
 #define KNAPSACK_HILLCLIMBING_HH
 #include "Bin.hh"
 #include "Item.hh"
+#include "Parameters.hh"
 #include "Solver.hh"
 
 namespace knapsack::algorithm
@@ -9,14 +10,14 @@ namespace knapsack::algorithm
 class HillClimbing : public Solver
 {
   private:
-    std::size_t iteration_;
     Bin &bin_;
     items_t items_;
+    Parameters parameters_;
     void objectiveFunction();
 
   public:
     HillClimbing() = delete;
-    HillClimbing(const std::size_t iteration, Bin &bin, const items_t &items);
+    HillClimbing(Bin &bin, const items_t &items, const Parameters &parameters);
     void solve() override;
 };
 } // namespace knapsack::algorithm

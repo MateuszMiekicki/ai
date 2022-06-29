@@ -4,8 +4,8 @@
 
 namespace knapsack::algorithm
 {
-HillClimbing::HillClimbing(const std::size_t iteration, Bin &bin, const items_t &items)
-    : iteration_{iteration}, bin_{bin}, items_{items}
+HillClimbing::HillClimbing(Bin &bin, const items_t &items, const Parameters &parameters)
+    : bin_{bin}, items_{items}, parameters_{parameters}
 {
 }
 
@@ -24,6 +24,7 @@ void HillClimbing::solve()
     do
     {
         objectiveFunction();
-    } while (--iteration_ and std::next_permutation(std::rbegin(items_), std::rend(items_)));
+    } while (--parameters_.iteration and
+             std::next_permutation(std::rbegin(items_), std::rend(items_)));
 }
 } // namespace knapsack::algorithm
