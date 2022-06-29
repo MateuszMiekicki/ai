@@ -1,8 +1,8 @@
 #include <gtest/gtest.h>
 
 #include "Bin.hh"
-#include "TabuSearch.hh"
 #include "Item.hh"
+#include "TabuSearch.hh"
 
 namespace
 {
@@ -36,12 +36,10 @@ TEST_P(TabuSearchSolver, testingDeterministicOrderItems)
 
 INSTANTIATE_TEST_SUITE_P(
     removeItemsLargerThanCapacity, TabuSearchSolver,
-    ::testing::Values(
-        Parameters{
-            {{40, 2}, {160, 2}, {70, 3}, {300, 15}, {70, 1}, {25, 4}, {25, 5}, {180, 6}, {180, 16}},
-            520,
-            15,
-            10}
-//        Parameters{{{60, 10}, {100, 20}, {120, 30}}, 220, 50, 5},
-//        Parameters{{{60, 10}, {100, 20}, {120, 30}}, 160, 30, 5}
- ));
+    ::testing::Values(Parameters{
+        {{40, 2}, {160, 2}, {70, 3}, {300, 15}, {70, 1}, {25, 4}, {25, 5}, {180, 6}, {180, 16}},
+        520,
+        15,
+        10} //        Parameters{{{60, 10}, {100, 20}, {120, 30}}, 220, 50, 5},
+            //        Parameters{{{60, 10}, {100, 20}, {120, 30}}, 160, 30, 5}
+                      ));
