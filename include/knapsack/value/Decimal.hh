@@ -15,26 +15,26 @@ template <typename Tag> struct Decimal
     Decimal(Decimal &&) noexcept = default;
     Decimal &operator=(Decimal &&) noexcept = default;
 
-    bool operator==(const Decimal<Tag> &rhs)
-    {
-        return value == rhs.value;
-    }
-
-    bool operator<(const Decimal<Tag> &rhs)
-    {
-        return value < rhs.value;
-    }
-
-    bool operator>(const Decimal<Tag> &rhs)
-    {
-        return value > rhs.value;
-    }
-
     operator value_t() const
     {
         return value;
     }
 };
+
+template <typename Tag> bool operator==(const Decimal<Tag> &lhs, const Decimal<Tag> &rhs)
+{
+    return lhs.value == rhs.value;
+}
+
+template <typename Tag> bool operator<(const Decimal<Tag> &lhs, const Decimal<Tag> &rhs)
+{
+    return lhs.value < rhs.value;
+}
+
+template <typename Tag> bool operator>(const Decimal<Tag> &lhs, const Decimal<Tag> &rhs)
+{
+    return lhs.value > rhs.value;
+}
 
 template <typename Tag> Decimal<Tag> operator+(const Decimal<Tag> &lhs, const Decimal<Tag> &rhs)
 {

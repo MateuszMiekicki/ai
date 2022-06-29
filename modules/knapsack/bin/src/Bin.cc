@@ -1,6 +1,5 @@
 #include "Bin.hh"
 #include "Item.hh"
-#include <algorithm>
 #include <numeric>
 
 namespace knapsack
@@ -17,7 +16,7 @@ bool Bin::isFits(const Item &item) const
 {
     return ((weight() + item.weight()) <= capacity());
 }
-
+// ToDo: refactoring, adding a function that simply fills the backpack, add fill if it fits
 void Bin::fill(const items_t &items)
 {
     std::for_each(items.cbegin(), items.cend(), [this](const auto &item) {
@@ -44,8 +43,13 @@ Weight Bin::capacity() const
     return capacity_;
 }
 
-void Bin::add(const Item& item)
+void Bin::add(const Item &item)
 {
     items_.emplace_back(item);
+}
+
+items_t Bin::items() const
+{
+    return items_;
 }
 } // namespace knapsack

@@ -32,7 +32,7 @@ auto shuffleSndRemoveShuffledItem(items_t &items)
     std::uniform_int_distribution<std::mt19937_64::result_type> dist(0, amountOfItems);
     const auto startIndex = dist(engine);
     items.at(startIndex);
-    return items.erase(std::begin(items) + static_cast<long long int>(startIndex))
+    return items.erase(std::begin(items) + static_cast<long long int>(startIndex));
 }
 
 auto getNeighbourOnLeftAndRight(items_t &items, std::vector<Item>::iterator &it,

@@ -22,7 +22,8 @@ class Bin
     Value value() const;
     Weight weight() const;
     Weight capacity() const;
-    void add(const Item& item);
+    void add(const Item &item);
+    items_t items() const;
 };
 } // namespace knapsack
 #endif // KNAPSACK_BIN_HH

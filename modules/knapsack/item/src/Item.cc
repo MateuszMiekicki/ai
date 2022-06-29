@@ -29,7 +29,7 @@ Weight Item::weight() const
 
 bool operator==(const Item &lhs, const Item &rhs)
 {
-    return (lhs.costEffectivenessRatio() == rhs.costEffectivenessRatio());
+    return (lhs.weight()==rhs.weight()) and (lhs.value()==rhs.value());
 }
 
 bool operator<(const Item &lhs, const Item &rhs)
