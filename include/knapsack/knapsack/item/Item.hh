@@ -1,6 +1,6 @@
 #ifndef KNAPSACK_ITEM_HH
 #define KNAPSACK_ITEM_HH
-#include "Decimal.hh"
+#include "Number.hh"
 #include <functional>
 #include <vector>
 

@@ -18,7 +18,7 @@ set_target_properties(${PROJECT_NAME}
 add_library(knapsack::item ALIAS ${PROJECT_NAME})
 target_include_directories(${PROJECT_NAME}
         PUBLIC ${CMAKE_SOURCE_DIR}/include/knapsack/knapsack/item
-        PUBLIC ${CMAKE_SOURCE_DIR}/include/knapsack/value
+        PUBLIC ${CMAKE_SOURCE_DIR}/include/knapsack/number
         )
 target_compile_options(
         ${PROJECT_NAME}

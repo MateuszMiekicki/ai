@@ -1,6 +1,6 @@
-project(bin VERSION 0.1.0 LANGUAGES CXX)
+project(genetic VERSION 0.1.0 LANGUAGES CXX)
 
-set(SOURCE Bin.cc)
+set(SOURCE Genetic.cc)
 add_library(${PROJECT_NAME}
         ${SOURCE}
         )
@@ -15,14 +15,14 @@ set_target_properties(${PROJECT_NAME}
         CXX_EXTENSIONS OFF
         CXX_STANDARD_REQUIRED ON
         )
-add_library(knapsack::bin ALIAS ${PROJECT_NAME})
+add_library(knapsack::algorithm::genetic ALIAS ${PROJECT_NAME})
 target_include_directories(${PROJECT_NAME}
-        PUBLIC ${CMAKE_SOURCE_DIR}/include/knapsack/knapsack/bin
-        PUBLIC ${CMAKE_SOURCE_DIR}/include/knapsack/number
+        PUBLIC ${CMAKE_SOURCE_DIR}/include/knapsack/algorithm/genetic
+        PUBLIC ${CMAKE_SOURCE_DIR}/include/knapsack/algorithm/solver
         )
-add_dependencies(${PROJECT_NAME} knapsack::item)
+add_dependencies(${PROJECT_NAME} knapsack::bin)
 target_link_libraries(${PROJECT_NAME}
-        PUBLIC knapsack::item
+        PUBLIC knapsack::bin
         )
 target_compile_options(
         ${PROJECT_NAME}

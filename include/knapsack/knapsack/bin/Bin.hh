@@ -1,6 +1,6 @@
 #ifndef KNAPSACK_BIN_HH
 #define KNAPSACK_BIN_HH
-#include "Decimal.hh"
+#include "Number.hh"
 #include <vector>
 
 namespace knapsack
