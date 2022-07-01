@@ -28,7 +28,7 @@ TEST_P(GeneticSolver, testingDeterministicOrderItems)
     Bin bin{binCapacity};
     prepareItems(items, binCapacity, deterministic);
     knapsack::algorithm::Parameters parameters{iteration};
-    parameters.temperature = 1'000.0;
+    parameters.amountOfChromosomes = 10;
     std::unique_ptr<Solver> solver = std::make_unique<Genetic>(bin, items, parameters);
     // Act
     solver->solve();

@@ -2,7 +2,9 @@
 #include "Bin.hh"
 #include "Item.hh"
 #include <algorithm>
+#include <iostream>
 #include <random>
+#include <unordered_set>
 
 namespace
 {
@@ -15,8 +17,20 @@ auto &randomEngine()
 
 auto random(const std::size_t min, const std::size_t max)
 {
+    std::random_device randomDevice;
+    thread_local std::mt19937_64 engine(randomDevice());
     std::uniform_int_distribution<std::mt19937_64 ::result_type> dist(min, max);
     return dist(randomEngine());
+}
+
+auto random(const std::size_t min, const std::size_t max, const std::size_t count)
+{
+    std::unordered_set<std::size_t> selected;
+    while (selected.size() < count)
+    {
+        selected.insert(random(min, max));
+    }
+    return selected;
 }
 } // namespace
 
@@ -28,88 +42,111 @@ Genetic::Genetic(Bin &bin, const items_t &items, const Parameters &parameters)
 {
 }
 
-Genetic::population_t Genetic::generatePopulations(const population_t &population) const
+Genetic::chromosome_t Genetic::generateDefaultListOfChromosomes(const items_t &items) const
 {
-    auto newPopulation = population_t();
-    newPopulation.reserve(parameters_.amountOfChromosomes.value().value);
-    for (auto i{parameters_.amountOfChromosomes.value().value / 2}; i not_eq 0; --i)
-    {
-        auto &&[first, second] = tournamentSelection(population);
-
-    }
+    auto defaultChromosomeList = chromosome_t();
+    defaultChromosomeList.reserve(items.size());
+    std::for_each(std::cbegin(items), std::cend(items), [&defaultChromosomeList](const auto &gene) {
+        defaultChromosomeList.emplace_back(false, gene);
+    });
+    return defaultChromosomeList;
 }
 
-Genetic::chromosome_t Genetic::crossover(const chromosome_t &first, const chromosome_t &second) const
-{
-
-}
-
-
-Genetic::population_t Genetic::generateInitialPopulations(const items_t &items) const
+Genetic::population_t Genetic::generateInitialPopulation(const items_t &items) const
 {
     auto population = population_t();
     population.reserve(parameters_.amountOfChromosomes.value().value);
+    const auto defaultListChromosome = generateDefaultListOfChromosomes(items);
     for (auto i{parameters_.amountOfChromosomes.value().value}; i not_eq 0; --i)
     {
-        auto chromosome = chromosome_t();
-        const auto amountOfGenes{::random(0, items.size())};
-        std::sample(std::begin(items), std::end(items), std::back_inserter(chromosome),
-                    amountOfGenes, randomEngine());
+        auto chromosome = defaultListChromosome;
+        const auto max = chromosome.size() - 1;
+        for (const auto &j : ::random(0, max, ::random(0, max)))
+        {
+            chromosome.at(j).first = true;
+        }
         population.emplace_back(std::move(chromosome));
     }
     return population;
 }
 
-void Genetic::selection(population_t &population) const
+Genetic::parents_t Genetic::selectTwoRandomChromosomes(const population_t &population) const
 {
-    population.erase(std::remove_if(std::begin(population), std::end(population),
-                                    [this](auto &&chromosome) {
-                                        return Bin(bin_.capacity(), chromosome).value() >
-                                               bin_.capacity();
-                                    }),
-                     std::end(population));
+    auto temp = population_t();
+    std::sample(std::begin(population), std::end(population), std::back_inserter(temp), 2,
+                randomEngine());
+    return {temp.at(0), temp.at(1)};
 }
 
-Genetic::pairParents_t Genetic::drawTwoPairsOfParents(const population_t &population) const
+Value Genetic::fitness(const chromosome_t &chromosome) const
 {
-    auto populationForTournament = population_t();
-    std::sample(std::cbegin(population), std::cend(population),
-                std::back_inserter(populationForTournament), 4, randomEngine());
-
-    return {{populationForTournament.at(0), populationForTournament.at(1)},
-            {populationForTournament.at(2), populationForTournament.at(3)}};
+    auto onlyChosenGenes = [this](const chromosome_t &chosen) {
+        auto temp = items_t();
+        for (const auto &[flag, gene] : chosen)
+        {
+            if (flag)
+            {
+                temp.push_back(gene);
+            }
+        }
+        return temp;
+    }(chromosome);
+    Bin tempBin(bin_.capacity(), onlyChosenGenes);
+    return (tempBin.weight() > bin_.capacity()) ? Value{0} : tempBin.value();
 }
 
-Genetic::parrents_t Genetic::evaluateParentPair(const Genetic::pairParents_t &pairParents) const
+Genetic::chromosome_t Genetic::singlePointCrossover(const parents_t &parent) const
 {
-    const auto capacity = bin_.capacity();
-    const auto firstChromosomeValue = Bin(capacity, pairParents.first.first).value();
-    const auto secondChromosomeValue = Bin(capacity, pairParents.first.second).value();
-
-    const auto thirdChromosomeValue = Bin(capacity, pairParents.second.first).value();
-    const auto fourthChromosomeValue = Bin(capacity, pairParents.second.second).value();
-
-    return {{firstChromosomeValue > secondChromosomeValue ? pairParents.first.first
-                                                          : pairParents.first.second},
-            {thirdChromosomeValue > fourthChromosomeValue ? pairParents.second.first
-                                                          : pairParents.second.second}};
-}
-
-Genetic::parrents_t Genetic::tournamentSelection(const population_t &population) const
-{
-    if (4 > population.size())
+    auto chromosome1 = chromosome_t();
+    auto chromosome2 = chromosome_t();
+    auto max = parent.first.size();
+    for (auto i = 0ULL; i < (max / 2); ++i)
     {
-        return {population.at(0), population.at(1)};
+        chromosome1.push_back(parent.first.at(i));
+        chromosome2.push_back(parent.first.at(max - i - 1));
     }
-    return evaluateParentPair(drawTwoPairsOfParents(population));
+    for (auto i = max / 2; i < max; ++i)
+    {
+        chromosome1.push_back(parent.first.at(i));
+        chromosome2.push_back(parent.second.at(max - i));
+    }
+    if (fitness(chromosome1) > fitness(chromosome2))
+    {
+        return chromosome1;
+    }
+    return chromosome2;
+}
+
+Genetic::population_t Genetic::generatePopulation(const population_t &population) const
+{
+    auto newPopulation = population;
+    newPopulation.erase(
+        std::remove_if(newPopulation.begin(), newPopulation.end(),
+                       [this](const auto chromosome) { return fitness(chromosome) == 0; }));
+    auto parents = selectTwoRandomChromosomes(newPopulation);
+    for (auto i{parameters_.amountOfChromosomes.value().value}; i not_eq 0; --i)
+    {
+        newPopulation.emplace_back(singlePointCrossover(parents));
+    }
+    return newPopulation;
 }
 
 void Genetic::solve()
 {
-    auto initialGeneration = generateInitialPopulations(items_);
+    auto temp = generateInitialPopulation(items_);
+
     for (auto i{parameters_.iteration}; i not_eq 0; --i)
     {
-        initialGeneration = generatePopulations(initialGeneration);
+        temp=generatePopulation(temp);
     }
+    Value v=0;
+    for(auto i : temp)
+    {
+        if(auto f = fitness(i);v<f)
+        {
+            v=f;
+        }
+    }
+    std::cerr<<"value"<<v.value;
 }
 } // namespace knapsack::algorithm
