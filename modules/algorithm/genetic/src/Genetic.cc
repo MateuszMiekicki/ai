@@ -2,7 +2,9 @@
 #include "Bin.hh"
 #include "Item.hh"
 #include <algorithm>
+#include <execution>
 #include <iostream>
+#include <mutex>
 #include <random>
 #include <unordered_set>
 
@@ -95,7 +97,8 @@ Genetic::population_t Genetic::generatePopulation(const items_t &items) const
 
 void Genetic::removeWeakest(population_t &population) const
 {
-    std::nth_element(std::begin(population), std::begin(population) + 1, std::end(population),
+    std::nth_element(std::execution::par, std::begin(population), std::begin(population) + 1,
+                     std::end(population),
                      [](const auto &lhs, const auto &rhs) { return value(lhs) < value(rhs); });
     population = population_t(population.begin() + 2, population.end());
 }
@@ -116,7 +119,7 @@ Genetic::population_t Genetic::generatePopulation(population_t population) const
 void Genetic::removeOverWeightGene(population_t &population) const
 {
     population.erase(
-        std::remove_if(std::begin(population), std::end(population),
+        std::remove_if(std::execution::par, std::begin(population), std::end(population),
                        [this](auto chromosome) { return (weight(chromosome) > bin_.capacity()); }),
         std::end(population));
 }
@@ -136,21 +139,22 @@ Genetic::parents_t Genetic::rankingMethod(population_t population)
 
 Genetic::chromosome_t Genetic::fitness(const Genetic::population_t &population) const
 {
+    std::mutex m;
     auto bestChromosome = chromosome_t();
     auto bestValue = Value{0};
-    for (auto &&chromosome : population)
-    {
-        if (weight(chromosome) > bin_.capacity())
-        {
-            continue;
-        }
-        auto current = value(chromosome);
-        if (current > bestValue)
-        {
-            bestValue = current;
-            bestChromosome = chromosome;
-        }
-    }
+    std::for_each(
+        std::execution::par, std::begin(population), std::end(population), [&](auto &&chromosome) {
+            std::lock_guard<std::mutex> guard(m);
+            if (const auto currentWeight = weight(chromosome); currentWeight <= bin_.capacity())
+            {
+                if (const auto currentValue = value(chromosome); currentValue > bestValue)
+                {
+                    bestValue = currentValue;
+                    bestChromosome = chromosome;
+                }
+            }
+        });
+
     return bestChromosome;
 }
 
@@ -208,7 +212,7 @@ void Genetic::solve()
         if (value(bestChromosome) == value(currentBestChromosome))
         {
             pmcounter++;
-            if (pmcounter == std::round(parameters_.iteration *0.5L))
+            if (pmcounter == std::round(parameters_.iteration * 0.5L))
             {
                 std::cerr << "iteracja " << i;
                 break;

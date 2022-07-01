@@ -1,9 +1,9 @@
-#include <gtest/gtest.h>
-
 #include "Bin.hh"
 #include "Genetic.hh"
 #include "Item.hh"
 #include "Parameters.hh"
+#include "Timer.hh"
+#include <gtest/gtest.h>
 // namespace
 //{
 // struct Parameters
@@ -57,9 +57,10 @@ TEST(zxc, testingDeterministicOrderItems)
     knapsack::algorithm::Parameters parameters{1000};
     parameters.amountOfChromosomes = 1000;
     parameters.probabilityOfMutation = 0.1L;
+
     std::unique_ptr<Solver> solver = std::make_unique<Genetic>(bin, items, parameters);
     // Act
-    solver->solve();
+    std::cerr << "time " << Timer::measurement(solver).count();
     // Assert
     ASSERT_EQ(bin.value(), 520);
 }
