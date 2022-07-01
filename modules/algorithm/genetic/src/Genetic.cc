@@ -17,8 +17,7 @@ auto &randomEngine()
 
 auto random(const std::size_t min, const std::size_t max)
 {
-    std::random_device randomDevice;
-    thread_local std::mt19937_64 engine(randomDevice());
+    // todo: max, change range to random
     std::uniform_int_distribution<std::mt19937_64 ::result_type> dist(min, max);
     return dist(randomEngine());
 }
@@ -32,6 +31,26 @@ auto random(const std::size_t min, const std::size_t max, const std::size_t coun
     }
     return selected;
 }
+
+auto drawProbability()
+{
+    std::uniform_real_distribution<long double> uniformRealDistribution(0.0L, 1.0L);
+    return (uniformRealDistribution(randomEngine()));
+}
+
+auto value = [](const auto &chromosome) {
+    return std::accumulate(std::cbegin(chromosome), std::cend(chromosome), knapsack::Value{0},
+                           [](const auto &lhs, const auto &rhs) {
+                               return lhs + (rhs.first ? rhs.second.value() : knapsack::Value{0});
+                           });
+};
+
+auto weight = [](const auto &chromosome) {
+    return std::accumulate(std::cbegin(chromosome), std::cend(chromosome), knapsack::Weight{0},
+                           [](const auto &lhs, const auto &rhs) {
+                               return lhs + (rhs.first ? rhs.second.weight() : knapsack::Weight{0});
+                           });
+};
 } // namespace
 
 namespace knapsack::algorithm
@@ -40,113 +59,179 @@ Genetic::Genetic(Bin &bin, const items_t &items, const Parameters &parameters)
     : bin_{bin}, items_{items}, parameters_{parameters}
 
 {
+    prepareItems(items_, bin_.capacity(), random);
 }
 
-Genetic::chromosome_t Genetic::generateDefaultListOfChromosomes(const items_t &items) const
+Genetic::chromosome_t Genetic::generateChromosome(const items_t &items,
+                                                  const std::size_t amountOfGenes) const
 {
-    auto defaultChromosomeList = chromosome_t();
-    defaultChromosomeList.reserve(items.size());
-    std::for_each(std::cbegin(items), std::cend(items), [&defaultChromosomeList](const auto &gene) {
-        defaultChromosomeList.emplace_back(false, gene);
-    });
-    return defaultChromosomeList;
+    auto chromosome = [](const items_t &itemsToConvert) {
+        auto tempChromosome = chromosome_t();
+        tempChromosome.reserve(itemsToConvert.size());
+        for (const auto item : itemsToConvert)
+        {
+            tempChromosome.emplace_back(false, item);
+        }
+        return tempChromosome;
+    }(items);
+
+    for (auto &&index : ::random(0, amountOfGenes, ::random(0, amountOfGenes)))
+    {
+        chromosome.at(index).first = true;
+    }
+    return chromosome;
 }
 
-Genetic::population_t Genetic::generateInitialPopulation(const items_t &items) const
+Genetic::population_t Genetic::generatePopulation(const items_t &items) const
 {
     auto population = population_t();
-    population.reserve(parameters_.amountOfChromosomes.value().value);
-    const auto defaultListChromosome = generateDefaultListOfChromosomes(items);
-    for (auto i{parameters_.amountOfChromosomes.value().value}; i not_eq 0; --i)
+    population.reserve(parameters_.amountOfChromosomes.value());
+    for (auto i{parameters_.amountOfChromosomes.value()}; i not_eq 0; --i)
     {
-        auto chromosome = defaultListChromosome;
-        const auto max = chromosome.size() - 1;
-        for (const auto &j : ::random(0, max, ::random(0, max)))
-        {
-            chromosome.at(j).first = true;
-        }
-        population.emplace_back(std::move(chromosome));
+        population.emplace_back(generateChromosome(items, ::random(0, items.size() - 1)));
     }
     return population;
 }
 
-Genetic::parents_t Genetic::selectTwoRandomChromosomes(const population_t &population) const
+void Genetic::removeWeakest(population_t &population) const
 {
-    auto temp = population_t();
-    std::sample(std::begin(population), std::end(population), std::back_inserter(temp), 2,
-                randomEngine());
-    return {temp.at(0), temp.at(1)};
+    std::nth_element(std::begin(population), std::begin(population) + 1, std::end(population),
+                     [](const auto &lhs, const auto &rhs) { return value(lhs) < value(rhs); });
+    population = population_t(population.begin() + 2, population.end());
 }
 
-Value Genetic::fitness(const chromosome_t &chromosome) const
+Genetic::population_t Genetic::generatePopulation(population_t population) const
 {
-    auto onlyChosenGenes = [this](const chromosome_t &chosen) {
-        auto temp = items_t();
-        for (const auto &[flag, gene] : chosen)
+    //    fitness(population);
+    auto parents = selection(population, rankingMethod);
+    parents = evolutionOperator(parents, onePointCrossover);
+    mutation(parents);
+    population.push_back(parents.first);
+    population.push_back(parents.second);
+    removeWeakest(population);
+    //        fitness(population);
+    return population;
+}
+
+void Genetic::removeOverWeightGene(population_t &population) const
+{
+    population.erase(
+        std::remove_if(std::begin(population), std::end(population),
+                       [this](auto chromosome) { return (weight(chromosome) > bin_.capacity()); }),
+        std::end(population));
+}
+
+Genetic::parents_t Genetic::selection(population_t population,
+                                      const selectionMethod_t &selectionMethod) const
+{
+    return selectionMethod(population);
+}
+
+Genetic::parents_t Genetic::rankingMethod(population_t population)
+{
+    std::nth_element(std::begin(population), std::begin(population) + 1, std::end(population),
+                     [](const auto &lhs, const auto &rhs) { return value(lhs) > value(rhs); });
+    return {population.at(0), population.at(1)};
+}
+
+Genetic::chromosome_t Genetic::fitness(const Genetic::population_t &population) const
+{
+    auto bestChromosome = chromosome_t();
+    auto bestValue = Value{0};
+    for (auto &&chromosome : population)
+    {
+        if (weight(chromosome) > bin_.capacity())
         {
-            if (flag)
-            {
-                temp.push_back(gene);
-            }
+            continue;
         }
-        return temp;
-    }(chromosome);
-    Bin tempBin(bin_.capacity(), onlyChosenGenes);
-    return (tempBin.weight() > bin_.capacity()) ? Value{0} : tempBin.value();
+        auto current = value(chromosome);
+        if (current > bestValue)
+        {
+            bestValue = current;
+            bestChromosome = chromosome;
+        }
+    }
+    return bestChromosome;
 }
 
-Genetic::chromosome_t Genetic::singlePointCrossover(const parents_t &parent) const
+Genetic::parents_t Genetic::evolutionOperator(parents_t parents,
+                                              const evolutionMethod_t &evolutionMethod) const
 {
-    auto chromosome1 = chromosome_t();
-    auto chromosome2 = chromosome_t();
-    auto max = parent.first.size();
-    for (auto i = 0ULL; i < (max / 2); ++i)
-    {
-        chromosome1.push_back(parent.first.at(i));
-        chromosome2.push_back(parent.first.at(max - i - 1));
-    }
-    for (auto i = max / 2; i < max; ++i)
-    {
-        chromosome1.push_back(parent.first.at(i));
-        chromosome2.push_back(parent.second.at(max - i));
-    }
-    if (fitness(chromosome1) > fitness(chromosome2))
-    {
-        return chromosome1;
-    }
-    return chromosome2;
+    return evolutionMethod(parents);
 }
 
-Genetic::population_t Genetic::generatePopulation(const population_t &population) const
+Genetic::parents_t Genetic::onePointCrossover(parents_t parents)
 {
-    auto newPopulation = population;
-    newPopulation.erase(
-        std::remove_if(newPopulation.begin(), newPopulation.end(),
-                       [this](const auto chromosome) { return fitness(chromosome) == 0; }));
-    auto parents = selectTwoRandomChromosomes(newPopulation);
-    for (auto i{parameters_.amountOfChromosomes.value().value}; i not_eq 0; --i)
+    for (auto i = ::random(0, parents.first.size() - 1); i not_eq 0; --i)
     {
-        newPopulation.emplace_back(singlePointCrossover(parents));
+        std::swap(parents.first.at(i), parents.second.at(i));
     }
-    return newPopulation;
+    return {parents.first, parents.second};
+}
+
+Genetic::parents_t Genetic::uniformCrossover(parents_t parents)
+{
+    for (std::size_t i{0}; i < parents.first.size(); ++i)
+    {
+        if (drawProbability() > 0.5L)
+        {
+            std::swap(parents.first.at(i), parents.second.at(i));
+        }
+    }
+    return parents;
+}
+
+void Genetic::mutation(chromosome_t &chromosome) const
+{
+    for (auto &gene : chromosome)
+    {
+        gene.first = (drawProbability() <= parameters_.probabilityOfMutation.value())
+                         ? (not gene.first)
+                         : gene.first;
+    }
+}
+
+void Genetic::mutation(parents_t &parents) const
+{
+    mutation(parents.first);
+    mutation(parents.second);
 }
 
 void Genetic::solve()
 {
-    auto temp = generateInitialPopulation(items_);
-
+    auto population = generatePopulation(items_);
+    auto bestChromosome = chromosome_t{};
+    auto pmcounter = 0;
     for (auto i{parameters_.iteration}; i not_eq 0; --i)
     {
-        temp=generatePopulation(temp);
-    }
-    Value v=0;
-    for(auto i : temp)
-    {
-        if(auto f = fitness(i);v<f)
+        auto currentBestChromosome = fitness(population);
+        if (value(bestChromosome) == value(currentBestChromosome))
         {
-            v=f;
+            pmcounter++;
+            if (pmcounter == std::round(parameters_.iteration *0.5L))
+            {
+                std::cerr << "iteracja " << i;
+                break;
+            }
+            continue;
         }
+        if (value(currentBestChromosome) > value(bestChromosome))
+        {
+            bestChromosome = currentBestChromosome;
+        }
+        population = generatePopulation(population);
     }
-    std::cerr<<"value"<<v.value;
+    auto itemsForBin = [](auto &&best) {
+        auto items = items_t();
+        for (auto &&chromosome : best)
+        {
+            if (chromosome.first)
+            {
+                items.emplace_back(chromosome.second);
+            }
+        }
+        return items;
+    }(bestChromosome);
+    bin_ = Bin(bin_.weight(), itemsForBin);
 }
 } // namespace knapsack::algorithm

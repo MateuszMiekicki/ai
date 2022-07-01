@@ -19,6 +19,19 @@ template <typename Tag, typename Type> struct Number
     {
         return value;
     }
+
+    Number &operator--()
+    {
+        value--;
+        return *this;
+    }
+
+    Number operator--(int)
+    {
+        Number tmp(*this);
+        operator--();
+        return tmp;
+    }
 };
 
 template <template <typename, typename> class Object, typename Tag, typename Type>
@@ -46,9 +59,15 @@ Object<Tag, Type> operator+(const Object<Tag, Type> &lhs, const Object<Tag, Type
 }
 
 template <typename Tag> using Decimal = Number<Tag, long double>;
-
 using Weight = Decimal<struct WeightTag>;
 using Value = Decimal<struct ValueTag>;
 using Ratio = Decimal<struct RatioTag>;
+
+template <typename Tag> using NaturalNumbers = Number<Tag, unsigned long long>;
+using Iteration = Decimal<struct IterationTag>;
+using Temperature = Decimal<struct TemperatureTag>;
+using AmountOfChromosomes = NaturalNumbers<struct AmountOfChromosomesTag>;
+using ProbabilityOfMutation = Decimal<struct ProbabilityOfMutationTag>;
+
 } // namespace knapsack
 #endif // KNAPSACK_NUMBER_HH

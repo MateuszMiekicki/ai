@@ -11,7 +11,7 @@ struct Parameters
     knapsack::items_t items;
     knapsack::Value expectedValue;
     knapsack::Weight binCapacity;
-    std::size_t iteration;
+    knapsack::Iteration iteration;
 };
 
 class SimulatedAnnealingSolver : public ::testing::TestWithParam<Parameters>
