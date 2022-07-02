@@ -40,6 +40,8 @@ class Genetic : public Solver
     void mutation(chromosome_t &chromosome) const;
     void removeWeakest(population_t &population) const;
 
+
+    chromosome_t objectFunction(const parents_t& parents)const;
   public:
     Genetic() = delete;
     Genetic(Bin &bin, const items_t &items, const Parameters &parameters);

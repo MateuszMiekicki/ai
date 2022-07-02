@@ -31,7 +31,7 @@ auto random(const std::size_t min, const std::size_t max, const std::size_t coun
     {
         selected.insert(random(min, max));
     }
-    return selected;
+    return std::vector(std::begin(selected), std::end(selected));
 }
 
 auto drawProbability()
@@ -103,15 +103,24 @@ void Genetic::removeWeakest(population_t &population) const
     population = population_t(population.begin() + 2, population.end());
 }
 
+Genetic::chromosome_t Genetic::objectFunction(const parents_t &parents) const
+{
+    return value(parents.first) > value(parents.second) ? parents.first : parents.second;
+}
+
 Genetic::population_t Genetic::generatePopulation(population_t population) const
 {
-    auto parents = selection(population, rankingMethod);
-    parents = evolutionOperator(parents, onePointCrossover);
-    mutation(parents);
-    population.push_back(parents.first);
-    population.push_back(parents.second);
-    removeWeakest(population);
-    return population;
+    auto newPopulation = population_t();
+    for (auto i{parameters_.amountOfChromosomes.value()}; i not_eq 0; --i)
+    {
+        auto parents = selection(population, rankingMethod);
+        parents = evolutionOperator(parents, onePointCrossover);
+        auto newGene = objectFunction(parents);
+        mutation(newGene);
+        newPopulation.push_back(newGene);
+    }
+//    removeWeakest(newPopulation);
+    return newPopulation;
 }
 
 void Genetic::removeOverWeightGene(population_t &population) const
@@ -130,9 +139,8 @@ Genetic::parents_t Genetic::selection(population_t population,
 
 Genetic::parents_t Genetic::rankingMethod(population_t population)
 {
-    std::nth_element(std::begin(population), std::begin(population) + 1, std::end(population),
-                     [](const auto &lhs, const auto &rhs) { return value(lhs) > value(rhs); });
-    return {population.at(0), population.at(1)};
+    auto r = ::random(0, population.size() - 1, 2);
+    return {population.at(r.at(0)), population.at(r.at(1))};
 }
 
 Genetic::chromosome_t Genetic::fitness(const Genetic::population_t &population) const
@@ -203,16 +211,18 @@ void Genetic::solve()
 {
     auto population = generatePopulation(items_);
     auto bestChromosome = chromosome_t{};
-    auto pmcounter = 0;
+    auto pmcounter = 1;
+    auto pp = 1;
     for (auto i{parameters_.iteration}; i not_eq 0; --i)
     {
+        std::cerr<<"ppopulation "<<pp<<std::endl;
         auto currentBestChromosome = fitness(population);
         if (value(bestChromosome) == value(currentBestChromosome))
         {
             pmcounter++;
             if (pmcounter == std::round(parameters_.iteration * 0.5L))
             {
-//                std::cerr << "iteracja " << i;
+                //                std::cerr << "iteracja " << i;
                 break;
             }
             continue;
@@ -221,6 +231,10 @@ void Genetic::solve()
         {
             bestChromosome = currentBestChromosome;
         }
+        if(pp%100 ==0)
+        {
+            std::cerr<<value(bestChromosome).value<<std::endl;
+        }pp++;
         population = generatePopulation(population);
     }
     auto itemsForBin = [](auto &&best) {

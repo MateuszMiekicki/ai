@@ -14,7 +14,7 @@ int main()
     auto parameters = Parameters(10000);
     parameters.probabilityOfMutation = .1;
     parameters.amountOfChromosomes = 1000;
-    parameters.temperature = 3000;
+    parameters.temperature = 100;
     const auto binCapacity = Weight{150};
     std::ifstream file("test1.csv");
     const auto items = Generate::read(std::move(file));

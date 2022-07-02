@@ -19,7 +19,7 @@ class SimulatedAnnealing : public Solver
     Ratio probabilityOfChoosingWorseSolution(const Bin &betterBin, const Bin &worseBin,
                                              const Temperature temperature) const;
     Ratio drawProbability() const;
-    void objectiveFunction(Temperature &temp);
+    bool objectiveFunction(const Bin& current)const;
     void permutation();
 
   public:

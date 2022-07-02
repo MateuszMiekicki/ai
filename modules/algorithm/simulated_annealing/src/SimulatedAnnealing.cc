@@ -25,38 +25,33 @@ Ratio SimulatedAnnealing::drawProbability() const
     return {(uniformRealDistribution(engine))};
 }
 
-void SimulatedAnnealing::objectiveFunction(Temperature &temperature)
+bool SimulatedAnnealing::objectiveFunction(const Bin &current) const
 {
-    Bin current{bin_.capacity()};
-    current.fill(items_);
-    if (bin_.value() <= current.value())
-    {
-        bin_ = current;
-    }
-    else if (const auto probability = drawProbability();
-             probabilityOfChoosingWorseSolution(bin_, current, temperature) > probability)
-    {
-        bin_ = current;
-        temperature = temperature.value * probability.value;
-    }
+    return bin_.value() <= current.value();
 }
 
-// ToDo: change the way items are generated to be shuffle, permutations are average
 void SimulatedAnnealing::solve()
 {
     auto temperature = parameters_.temperature.value();
-    //    do
-    //    {
-    //        objectiveFunction(temperature);
-    //    } while (--parameters_.iteration and
-    //             std::next_permutation(std::rbegin(items_), std::rend(items_)));
-
     std::random_device rd;
     std::mt19937 g(rd());
     do
     {
         std::shuffle(items_.begin(), items_.end(), g);
-        objectiveFunction(temperature);
+        Bin current{bin_.capacity()};
+        current.fill(items_);
+
+
+        if (objectiveFunction(current))
+        {
+            bin_ = current;
+        }
+        else if (const auto probability = drawProbability();
+                 probabilityOfChoosingWorseSolution(bin_, current, temperature) > probability)
+        {
+            bin_ = current;
+            temperature = temperature.value * probability.value;
+        }
     } while (--parameters_.iteration);
 }
 } // namespace knapsack::algorithm
