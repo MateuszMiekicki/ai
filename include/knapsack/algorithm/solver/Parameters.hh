@@ -1,6 +1,7 @@
 #ifndef KNAPSACK_PARAMETERS_HH
 #define KNAPSACK_PARAMETERS_HH
 #include <optional>
+#include "Number.hh"
 
 namespace knapsack::algorithm
 {

@@ -19,6 +19,7 @@ add_library(knapsack::algorithm::genetic ALIAS ${PROJECT_NAME})
 target_include_directories(${PROJECT_NAME}
         PUBLIC ${CMAKE_SOURCE_DIR}/include/knapsack/algorithm/genetic
         PUBLIC ${CMAKE_SOURCE_DIR}/include/knapsack/algorithm/solver
+        PUBLIC ${CMAKE_SOURCE_DIR}/include/knapsack/knapsack/generate
         )
 add_dependencies(${PROJECT_NAME} knapsack::bin)
 target_link_libraries(${PROJECT_NAME}

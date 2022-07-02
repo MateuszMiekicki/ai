@@ -51,8 +51,8 @@ class Generate
         {
             if (auto found = line.find_first_of(";"); found not_eq std::string::npos)
             {
-                const auto value = std::stold(std::string(std::begin(line), std::begin(line) + found));
-                const auto weight = std::stold(std::string(std::begin(line) + found+1, std::end(line)));
+                const auto value = std::stold(std::string(std::begin(line), std::begin(line) + static_cast<long long>(found)));
+                const auto weight = std::stold(std::string(std::begin(line) + static_cast<long long>(found)+1LL, std::end(line)));
                 items.emplace_back(value, weight);
             }
         }

@@ -19,6 +19,7 @@ add_library(knapsack::algorithm::hill_climbing ALIAS ${PROJECT_NAME})
 target_include_directories(${PROJECT_NAME}
         PUBLIC ${CMAKE_SOURCE_DIR}/include/knapsack/algorithm/hill_climbing
         PUBLIC ${CMAKE_SOURCE_DIR}/include/knapsack/algorithm/solver
+        PUBLIC ${CMAKE_SOURCE_DIR}/include/knapsack/knapsack/Generate
         )
 add_dependencies(${PROJECT_NAME} knapsack::bin)
 target_link_libraries(${PROJECT_NAME}

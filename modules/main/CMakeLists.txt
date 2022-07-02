@@ -1,7 +1,7 @@
-project(simulated_annealing VERSION 0.1.0 LANGUAGES CXX)
+project(main VERSION 0.1.0 LANGUAGES CXX)
 
-set(SOURCE SimulatedAnnealing.cc)
-add_library(${PROJECT_NAME}
+set(SOURCE main.cc)
+add_executable(${PROJECT_NAME}
         ${SOURCE}
         )
 set_target_properties(${PROJECT_NAME}
@@ -15,15 +15,15 @@ set_target_properties(${PROJECT_NAME}
         CXX_EXTENSIONS OFF
         CXX_STANDARD_REQUIRED ON
         )
-add_library(knapsack::algorithm::simulated_annealing ALIAS ${PROJECT_NAME})
 target_include_directories(${PROJECT_NAME}
-        PUBLIC ${CMAKE_SOURCE_DIR}/include/knapsack/algorithm/simulated_annealing
-        PUBLIC ${CMAKE_SOURCE_DIR}/include/knapsack/algorithm/solver
-        PUBLIC ${CMAKE_SOURCE_DIR}/include/knapsack/knapsack/generate
+        PUBLIC ${CMAKE_SOURCE_DIR}/include/knapsack
         )
-add_dependencies(${PROJECT_NAME} knapsack::bin)
 target_link_libraries(${PROJECT_NAME}
-        PUBLIC knapsack::bin
+        PRIVATE knapsack::item
+        PRIVATE knapsack::bin
+        PRIVATE knapsack::algorithm::genetic
+        PRIVATE knapsack::algorithm::hill_climbing
+        PRIVATE knapsack::algorithm::simulated_annealing
         )
 target_compile_options(
         ${PROJECT_NAME}

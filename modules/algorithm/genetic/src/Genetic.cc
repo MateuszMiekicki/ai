@@ -105,14 +105,12 @@ void Genetic::removeWeakest(population_t &population) const
 
 Genetic::population_t Genetic::generatePopulation(population_t population) const
 {
-    //    fitness(population);
     auto parents = selection(population, rankingMethod);
     parents = evolutionOperator(parents, onePointCrossover);
     mutation(parents);
     population.push_back(parents.first);
     population.push_back(parents.second);
     removeWeakest(population);
-    //        fitness(population);
     return population;
 }
 
@@ -214,7 +212,7 @@ void Genetic::solve()
             pmcounter++;
             if (pmcounter == std::round(parameters_.iteration * 0.5L))
             {
-                std::cerr << "iteracja " << i;
+//                std::cerr << "iteracja " << i;
                 break;
             }
             continue;

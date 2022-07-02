@@ -45,3 +45,24 @@ INSTANTIATE_TEST_SUITE_P(
             10},
         Parameters{{{60, 10}, {100, 20}, {120, 30}}, 220, 50, 5},
         Parameters{{{60, 10}, {100, 20}, {120, 30}}, 160, 30, 5}));
+#include <fstream>
+#include "Generate.hh"
+TEST(asd, as)
+{
+    // Arrange
+    using namespace knapsack;
+    using namespace knapsack::algorithm;
+    std::ifstream file("test1.csv");
+    items_t items = Generate::read(std::move(file));
+    Bin bin{50};
+
+    prepareItems(items, 50, deterministic);
+    knapsack::algorithm::Parameters parameters{100000};
+    std::unique_ptr<Solver> solver = std::make_unique<HillClimbing>(bin, items, parameters);
+    // Act
+    solver->solve();
+    // Assert
+    std::cerr<<"bin "<<bin.weight()<<' '<<bin.value()<<std::endl;
+
+    ASSERT_EQ(bin.value(), 30);
+}

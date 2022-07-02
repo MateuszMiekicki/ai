@@ -45,3 +45,31 @@ INSTANTIATE_TEST_SUITE_P(
             1000},
         Parameters{{{60, 10}, {100, 20}, {120, 30}}, 220, 50, 1000},
         Parameters{{{60, 10}, {100, 20}, {120, 30}}, 160, 30, 1000}));
+
+#include "Timer.hh"
+#include "Generate.hh"
+TEST(cz, testingDeterministicOrderItems)
+{
+    // Arrange
+    using namespace knapsack;
+    using namespace knapsack::algorithm;
+    //
+    //    auto items = Generate::generate(15, 10, 50);
+    //    std::ofstream file1("test1.csv");
+    //    Generate::write(std::move(file1), items);
+
+    std::ifstream file("test1.csv");
+    items_t items = Generate::read(std::move(file));
+
+    Weight binCapacity = 50;
+    Bin bin{binCapacity};
+    knapsack::algorithm::Parameters parameters{100000};
+    parameters.temperature = 1000;
+
+    std::unique_ptr<Solver> solver = std::make_unique<SimulatedAnnealing>(bin, items, parameters);
+    // Act
+    std::cerr << "time " << Timer::measurement(solver).count();
+    // Assert
+    std::cerr<<"bin "<<bin.weight()<<' '<<bin.value()<<std::endl;
+    ASSERT_EQ(bin.value(), 520);
+}
